@@ -57,17 +57,41 @@ export async function POST(req: Request) {
     try {
       const payload = await verifyActivationToken(startPayload);
 
-      const { error } = await supabaseAdmin
-        .from("users")
-        .update({
-          telegram_chat_id: String(chatId),
-          telegram_username: telegramUsername || null,
-          status: "active",
-        })
-        .eq("id", payload.user_id);
+      try {
+        const { error } = await supabaseAdmin
+          .from("users")
+          .update({
+            telegram_chat_id: String(chatId),
+            telegram_username: telegramUsername || null,
+            status: "active",
+          })
+          .eq("id", payload.user_id);
 
-      if (error) {
-        throw error;
+        if (error) {
+          throw error;
+        }
+      } catch (error) {
+        console.error("Failed to link Telegram account", {
+          user_id: payload.user_id,
+          chat_id: String(chatId),
+          telegram_username: telegramUsername || null,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+
+        await sendTelegramMessage(
+          String(chatId),
+          "Maaf Kak, akun Telegram belum berhasil dihubungkan karena ada gangguan sistem di OmzetPilot. Tim kami perlu cek koneksi database terlebih dulu."
+        );
+
+        return Response.json(
+          {
+            ok: false,
+            command: "telegram_link_failed",
+            error:
+              error instanceof Error ? error.message : "Failed to update user",
+          },
+          { status: 500 }
+        );
       }
 
       await sendTelegramMessage(
