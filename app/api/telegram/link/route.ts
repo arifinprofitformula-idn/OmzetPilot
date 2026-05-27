@@ -4,6 +4,8 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const userId = url.searchParams.get("user_id");
   const botUsername = process.env.TELEGRAM_BOT_USERNAME;
+  const responseFormat = url.searchParams.get("format");
+  const acceptHeader = req.headers.get("accept") || "";
 
   if (!botUsername) {
     return Response.json(
@@ -21,6 +23,12 @@ export async function GET(req: Request) {
 
   const token = await signActivationToken(userId);
   const magicLink = `https://t.me/${botUsername}?start=${encodeURIComponent(token)}`;
+  const shouldReturnJson =
+    responseFormat === "json" || acceptHeader.includes("application/json");
+
+  if (!shouldReturnJson) {
+    return Response.redirect(magicLink, 302);
+  }
 
   return Response.json({
     ok: true,

@@ -6,6 +6,20 @@ type TelegramApiResponse = {
   result?: unknown;
 };
 
+type MissionKeyboardItem = {
+  id: string;
+  mission_order: number;
+};
+
+type TelegramInlineKeyboardButton = {
+  text: string;
+  callback_data: string;
+};
+
+type TelegramInlineKeyboardMarkup = {
+  inline_keyboard: TelegramInlineKeyboardButton[][];
+};
+
 const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
 if (!botToken) {
@@ -56,4 +70,27 @@ export async function answerCallbackQuery(
     callback_query_id: callbackQueryId,
     ...(text ? { text } : {}),
   });
+}
+
+export function buildMissionDoneKeyboard(
+  missionItems: MissionKeyboardItem[]
+): TelegramInlineKeyboardMarkup {
+  return {
+    inline_keyboard: missionItems.map((item) => {
+      const callbackData = `done:${item.id}`;
+
+      if (callbackData.length > 64) {
+        throw new Error(
+          `Mission item callback_data exceeds Telegram limit for item ${item.id}`
+        );
+      }
+
+      return [
+        {
+          text: `✅ Misi ${item.mission_order} Selesai`,
+          callback_data: callbackData,
+        },
+      ];
+    }),
+  };
 }
