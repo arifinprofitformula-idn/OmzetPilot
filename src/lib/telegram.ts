@@ -28,6 +28,21 @@ if (!botToken) {
 
 const telegramApiBaseUrl = `https://api.telegram.org/bot${botToken}`;
 
+function buildTestTelegramResult(
+  chatId: string,
+  text: string,
+  replyMarkup?: unknown
+) {
+  return {
+    simulated: true,
+    provider: "telegram",
+    chat_id: chatId,
+    message_id: 0,
+    text,
+    reply_markup: replyMarkup ?? null,
+  };
+}
+
 async function callTelegramApi(
   method: string,
   payload: Record<string, unknown>
@@ -54,6 +69,10 @@ export async function sendTelegramMessage(
   text: string,
   replyMarkup?: unknown
 ) {
+  if (chatId.startsWith("test:")) {
+    return buildTestTelegramResult(chatId, text, replyMarkup);
+  }
+
   return callTelegramApi("sendMessage", {
     chat_id: chatId,
     text,

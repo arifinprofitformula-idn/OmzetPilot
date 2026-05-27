@@ -1,5 +1,43 @@
 import { sendMissionToUser } from "@/src/lib/missionDelivery";
 
+function buildErrorResponse(req: Request, userId: string, error: unknown) {
+  const message =
+    error instanceof Error ? error.message : "Mission send failed";
+
+  if (message === "User not found") {
+    return Response.json(
+      {
+        ok: false,
+        error: message,
+      },
+      { status: 404 }
+    );
+  }
+
+  if (message === "User does not have telegram_chat_id") {
+    const url = new URL(req.url);
+    const telegramLinkUrl = `${url.origin}/api/telegram/link?user_id=${encodeURIComponent(userId)}`;
+
+    return Response.json(
+      {
+        ok: false,
+        error: message,
+        action: "Link Telegram account first",
+        telegram_link_url: telegramLinkUrl,
+      },
+      { status: 409 }
+    );
+  }
+
+  return Response.json(
+    {
+      ok: false,
+      error: message,
+    },
+    { status: 500 }
+  );
+}
+
 // Internal testing route only. TODO: protect this route before wider deployment.
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -22,12 +60,6 @@ export async function GET(req: Request) {
       telegram_result: result.telegram_result,
     });
   } catch (error) {
-    return Response.json(
-      {
-        ok: false,
-        error: error instanceof Error ? error.message : "Mission send failed",
-      },
-      { status: 500 }
-    );
+    return buildErrorResponse(req, userId, error);
   }
 }
