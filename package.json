@@ -6,7 +6,9 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "telegram:set-webhook": "tsx scripts/set-telegram-webhook.ts",
+    "telegram:webhook-info": "tsx scripts/get-telegram-webhook-info.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
