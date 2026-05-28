@@ -104,7 +104,11 @@ export default async function AdminPaymentPage({
       />
 
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-          <form className="grid gap-4 md:grid-cols-5 md:items-end" method="get">
+          <form
+            className="grid gap-4 md:grid-cols-5 md:items-end"
+            method="get"
+            suppressHydrationWarning
+          >
             <label className="space-y-2">
               <span className="text-sm font-medium text-slate-700">
                 Payment Action
@@ -112,6 +116,7 @@ export default async function AdminPaymentPage({
               <select
                 name="action"
                 defaultValue={data.filters.action}
+                suppressHydrationWarning
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
               >
                 <option value="all">All</option>
@@ -127,6 +132,7 @@ export default async function AdminPaymentPage({
               <select
                 name="offer"
                 defaultValue={data.filters.offer}
+                suppressHydrationWarning
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
               >
                 <option value="all">All</option>
@@ -142,6 +148,7 @@ export default async function AdminPaymentPage({
               <select
                 name="intent"
                 defaultValue={data.filters.intent}
+                suppressHydrationWarning
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
               >
                 <option value="all">All</option>
@@ -158,12 +165,14 @@ export default async function AdminPaymentPage({
                 name="cohort"
                 defaultValue={data.filters.cohort}
                 placeholder="alpha_batch_1"
+                suppressHydrationWarning
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
               />
             </label>
 
             <button
               type="submit"
+              suppressHydrationWarning
               className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
               Apply
