@@ -3,6 +3,7 @@ import { connection } from "next/server";
 
 import { AdminPageHeader } from "@/src/components/admin/AdminPageHeader";
 import { GenerateMagicLinkButton } from "@/src/components/admin/GenerateMagicLinkButton";
+import { LanguageNote } from "@/src/components/admin/LanguageNote";
 import { QaChecklistSection } from "@/src/components/admin/QaChecklistSection";
 import { QaMetricCard } from "@/src/components/admin/QaMetricCard";
 import { QaRunbookCard } from "@/src/components/admin/QaRunbookCard";
@@ -12,7 +13,7 @@ import { SendMissionButton } from "@/src/components/admin/SendMissionButton";
 import { getAdminQaData } from "@/src/lib/adminQa";
 
 export const metadata: Metadata = {
-  title: "MVP QA Checklist | OmzetPilot",
+  title: "Cek Kesiapan MVP | OmzetPilot",
   description:
     "Founder QA validation page for OmzetPilot internal MVP readiness.",
 };
@@ -30,15 +31,17 @@ export default async function AdminQaPage() {
   return (
     <>
       <AdminPageHeader
-        title="MVP QA Checklist"
-        subtitle="Validate OmzetPilot core loop before dogfooding and paid beta."
+        title="Cek Kesiapan MVP"
+        subtitle="Pastikan alur utama OmzetPilot berjalan sebelum uji internal dan paid beta."
         actions={
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            <p className="font-medium text-slate-900">Today (WIB)</p>
+            <p className="font-medium text-slate-900">Hari Ini (WIB)</p>
             <p>{data.todayWib}</p>
           </div>
         }
       />
+
+      <LanguageNote />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <QaMetricCard label="Total Users" value={data.summary.totalUsers} />

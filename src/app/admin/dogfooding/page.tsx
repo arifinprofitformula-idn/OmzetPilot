@@ -9,7 +9,7 @@ import { StatCard } from "@/src/components/admin/StatCard";
 import { getAdminDogfoodingData } from "@/src/lib/adminDogfooding";
 
 export const metadata: Metadata = {
-  title: "Dogfooding Control Panel | OmzetPilot",
+  title: "Panel Uji Internal | OmzetPilot",
   description: "Pantau tester internal OmzetPilot dari onboarding sampai sinyal bayar.",
 };
 
@@ -37,7 +37,7 @@ export default async function AdminDogfoodingPage({
   return (
     <>
       <AdminPageHeader
-        title="Dogfooding Control Panel"
+        title="Panel Uji Internal"
         subtitle="Pantau tester internal dari onboarding sampai sinyal bayar."
         actions={
           <div className="flex flex-col gap-3 md:items-end">
@@ -89,15 +89,15 @@ export default async function AdminDogfoodingPage({
               suppressHydrationWarning
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
             >
-              <option value="all">all</option>
-              <option value="ready">ready</option>
-              <option value="onboarding_stuck">onboarding_stuck</option>
-              <option value="telegram_connected">telegram_connected</option>
-              <option value="mission_sent">mission_sent</option>
-              <option value="moved">moved</option>
-              <option value="reported">reported</option>
-              <option value="payment_signal">payment_signal</option>
-              <option value="needs_follow_up">needs_follow_up</option>
+              <option value="all">Semua tester</option>
+              <option value="ready">Siap diuji</option>
+              <option value="onboarding_stuck">Macet di onboarding</option>
+              <option value="telegram_connected">Telegram terhubung</option>
+              <option value="mission_sent">Misi sudah terkirim</option>
+              <option value="moved">Sudah bergerak</option>
+              <option value="reported">Sudah lapor</option>
+              <option value="payment_signal">Ada sinyal bayar</option>
+              <option value="needs_follow_up">Perlu follow up</option>
             </select>
           </label>
 
@@ -212,7 +212,7 @@ export default async function AdminDogfoodingPage({
                     <th className="px-4 py-3">Laporan</th>
                     <th className="px-4 py-3">Sinyal Bayar</th>
                     <th className="px-4 py-3">Rekomendasi Follow Up</th>
-                    <th className="px-4 py-3">Actions</th>
+                    <th className="px-4 py-3">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -227,6 +227,17 @@ export default async function AdminDogfoodingPage({
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
+        <div className="xl:col-span-2">
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950">
+              Fokus Hari Ini
+            </h2>
+            <p className="text-sm leading-6 text-slate-600">
+              Empat antrean kerja paling penting untuk mendorong tester sampai
+              benar-benar bergerak dan memberi sinyal hasil.
+            </p>
+          </div>
+        </div>
         {[
           {
             title: "Macet di Onboarding",
@@ -337,7 +348,7 @@ export default async function AdminDogfoodingPage({
               ["Mission Item Done Rate", ">30%"],
               ["Report Rate", ">30%"],
               ["D7 Active User", ">30%"],
-              ["Payment Action Paid", "min 1-3 users"],
+              ["Tester Sudah Bayar", "min 1-3 tester"],
               ["Critical Bug", "0"],
             ].map(([label, target]) => (
               <div

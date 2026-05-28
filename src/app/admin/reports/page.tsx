@@ -7,8 +7,8 @@ import { StatCard } from "@/src/components/admin/StatCard";
 import { getAdminReportsData } from "@/src/lib/adminReports";
 
 export const metadata: Metadata = {
-  title: "Reports & RGA | OmzetPilot",
-  description: "Founder reporting monitor for OmzetPilot daily outcomes.",
+  title: "Laporan Hasil & Aksi Jualan | OmzetPilot",
+  description: "Pantauan hasil harian tester OmzetPilot.",
 };
 
 type AdminReportsPageProps = {
@@ -35,31 +35,31 @@ function formatAverage(value: number) {
 
 function buildInsights(summary: Awaited<ReturnType<typeof getAdminReportsData>>["summary"]) {
   if (summary.totalReports === 0) {
-    return ["No reports submitted for the selected filter."];
+    return ["Belum ada laporan hasil pada filter ini."];
   }
 
   const insights: string[] = [];
 
   if (summary.reportCode4Count >= Math.max(2, summary.totalReports / 3)) {
     insights.push(
-      "Several users did not execute missions. Consider lighter missions or reminder follow-up."
+      "Beberapa tester belum menjalankan misi. Coba beri misi yang lebih ringan atau follow up singkat."
     );
   }
 
   if (summary.reportCode2Count >= Math.max(2, summary.totalReports / 3)) {
     insights.push(
-      "Many users received responses but have not closed yet. Follow-up missions should be prioritized."
+      "Banyak tester sudah mendapat respon tapi belum closing. Prioritaskan misi follow up."
     );
   }
 
   if (summary.closingReports > 0) {
     insights.push(
-      "Closing signal detected. Consider referral, repeat order, or closing push missions."
+      "Ada sinyal closing. Pertimbangkan dorongan repeat order, referral, atau closing push."
     );
   }
 
   if (insights.length === 0) {
-    insights.push("Report flow looks stable for the selected filter.");
+    insights.push("Alur laporan terlihat stabil pada filter ini.");
   }
 
   return insights;
@@ -82,11 +82,11 @@ export default async function AdminReportsPage({
   return (
     <>
       <AdminPageHeader
-        title="Reports & RGA"
-        subtitle="Track daily report outcomes, revenue-generating actions, and closing signals."
+        title="Laporan Hasil & Aksi Jualan"
+        subtitle="Baca hasil harian tester: aksi jualan, respon, closing, dan kendala."
         actions={
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            <p className="font-medium text-slate-900">Selected Date</p>
+            <p className="font-medium text-slate-900">Tanggal Dipilih</p>
             <p>{data.filters.date}</p>
           </div>
         }
@@ -95,7 +95,7 @@ export default async function AdminReportsPage({
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
           <form className="grid gap-4 md:grid-cols-4 md:items-end" method="get">
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-700">Date</span>
+              <span className="text-sm font-medium text-slate-700">Tanggal</span>
               <input
                 type="date"
                 name="date"
@@ -105,17 +105,17 @@ export default async function AdminReportsPage({
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-700">Report Code</span>
+              <span className="text-sm font-medium text-slate-700">Hasil Laporan</span>
               <select
                 name="report_code"
                 defaultValue={data.filters.reportCode}
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
               >
-                <option value="all">All</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
+                <option value="all">Semua</option>
+                <option value="1">1 • Ada Closing</option>
+                <option value="2">2 • Ada Respon</option>
+                <option value="3">3 • Sudah Aksi</option>
+                <option value="4">4 • Belum Sempat</option>
               </select>
             </label>
 
@@ -126,9 +126,9 @@ export default async function AdminReportsPage({
                 defaultValue={data.filters.closing}
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
               >
-                <option value="all">All</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="all">Semua</option>
+                <option value="yes">Ya</option>
+                <option value="no">Belum</option>
               </select>
             </label>
 
@@ -136,64 +136,64 @@ export default async function AdminReportsPage({
               type="submit"
               className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
-              Apply
+              Terapkan
             </button>
           </form>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
           <StatCard
-            label="Total Reports"
+            label="Total Laporan"
             value={data.summary.totalReports}
-            description="Reports matching the current filter."
+            description="Jumlah laporan yang masuk ke filter ini."
             tone="neutral"
           />
           <StatCard
-            label="Total RGA"
+            label="Aksi Jualan"
             value={data.summary.totalRga}
-            description="Sum of RGA from filtered reports."
+            description="Total aksi jualan atau RGA dari laporan terpilih."
             tone="success"
           />
           <StatCard
-            label="Average RGA per Report"
+            label="Rata-rata Aksi per Laporan"
             value={formatAverage(data.summary.averageRgaPerReport)}
-            description="Average RGA contribution per report."
+            description="Rata-rata aksi jualan per laporan."
             tone="info"
           />
           <StatCard
-            label="Closing Reports"
+            label="Ada Closing"
             value={data.summary.closingReports}
-            description="Reports marked with closing signals."
+            description="Laporan dengan sinyal closing."
             tone="warning"
           />
           <StatCard
-            label="Total Revenue"
+            label="Total Omzet"
             value={formatCurrency(data.summary.totalRevenue)}
-            description="Revenue reported from selected outcomes."
+            description="Omzet yang tercatat dari hasil terpilih."
             tone="success"
           />
           <StatCard
-            label="Report Code 1 Count"
+            label="Kode 1"
             value={data.summary.reportCode1Count}
-            description="Closing / Money In outcomes."
+            description="Ada closing atau uang masuk."
             tone="success"
           />
           <StatCard
-            label="Report Code 2 Count"
+            label="Kode 2"
             value={data.summary.reportCode2Count}
-            description="Response, not closing yet."
+            description="Ada respon, belum closing."
             tone="info"
           />
           <StatCard
-            label="Report Code 3 Count"
+            label="Kode 3"
             value={data.summary.reportCode3Count}
-            description="Done, no response yet."
+            description="Sudah aksi, belum ada respon."
             tone="warning"
           />
           <StatCard
-            label="Report Code 4 Count"
+            label="Kode 4"
             value={data.summary.reportCode4Count}
-            description="Mission not executed."
+            description="Belum sempat jalan."
             tone="danger"
           />
       </section>
@@ -202,10 +202,10 @@ export default async function AdminReportsPage({
           <div className="space-y-4">
             <div className="space-y-2">
               <h2 className="text-xl font-semibold tracking-tight text-slate-950">
-                Insights
+                Insight Singkat
               </h2>
               <p className="text-sm leading-6 text-slate-600">
-                Lightweight founder notes based on the current report mix.
+                Catatan cepat untuk membantu operator menentukan langkah berikutnya.
               </p>
             </div>
 
@@ -226,10 +226,10 @@ export default async function AdminReportsPage({
         <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-8 py-16 text-center shadow-sm">
           <div className="mx-auto max-w-xl space-y-3">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-              No reports found for the selected filter.
+              Belum ada laporan hasil pada filter ini.
             </h2>
             <p className="text-sm leading-6 text-slate-600">
-              Try another date, closing filter, or report code selection.
+              Pastikan tester sudah menerima misi dan mengirim laporan sore.
             </p>
           </div>
         </section>

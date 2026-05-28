@@ -12,10 +12,18 @@ import { SendMissionButton } from "@/src/components/admin/SendMissionButton";
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
 import { getAdminUserDetailData } from "@/src/lib/adminUserDetail";
 import type { Json } from "@/src/types/database.types";
+import {
+  getFitScoreLabel,
+  getMissionStatusLabel,
+  getOfferTypeLabel,
+  getPaymentActionLabel,
+  getReportCodeLabel,
+  getUserStatusLabel,
+} from "@/src/lib/uiLanguage";
 
 export const metadata: Metadata = {
-  title: "User Detail | OmzetPilot",
-  description: "Founder detail view for OmzetPilot users.",
+  title: "Detail Tester | OmzetPilot",
+  description: "Halaman detail tester untuk OmzetPilot.",
 };
 
 function formatLabel(value: string) {
@@ -60,7 +68,7 @@ function formatBoolean(value: boolean | null) {
     return "-";
   }
 
-  return value ? "Yes" : "No";
+  return value ? "Ya" : "Belum";
 }
 
 function getStatusTone(value: string | null | undefined) {
@@ -171,23 +179,23 @@ export default async function AdminUserDetailPage(
     return (
       <>
         <AdminPageHeader
-          title="User Not Found"
-          subtitle="The requested admin user record could not be found."
+          title="Tester Tidak Ditemukan"
+          subtitle="Data tester yang diminta tidak ditemukan."
         />
 
         <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-8 py-16 text-center shadow-sm">
           <div className="mx-auto max-w-xl space-y-4">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-              We could not find that user
+              Tester tidak ditemukan
             </h2>
             <p className="text-sm leading-6 text-slate-600">
-              The record may have been removed or the URL may be incorrect.
+              Data mungkin sudah dihapus atau tautannya tidak tepat.
             </p>
             <Link
               href="/admin/users"
               className="inline-flex rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
             >
-              Back to Users
+              Kembali ke Tester
             </Link>
           </div>
         </section>
@@ -210,24 +218,24 @@ export default async function AdminUserDetailPage(
     <>
       <AdminPageHeader
         title={user.full_name}
-        subtitle="Inspect profile, mission history, reporting behavior, and operational activity for this alpha tester."
+        subtitle="Lihat profil, riwayat misi, progress aksi jualan, dan catatan operasional tester ini."
         actions={
           <div className="flex flex-wrap gap-2">
             <StatusBadge
-              label={formatLabel(user.status)}
+              label={getUserStatusLabel(user.status)}
               tone={getStatusTone(user.status)}
             />
             <StatusBadge
-              label={telegramStatus === "connected" ? "Connected" : "Not Connected"}
+              label={telegramStatus === "connected" ? "Terhubung" : "Belum Terhubung"}
               tone={getStatusTone(telegramStatus)}
             />
             {user.fit_score ? (
               <StatusBadge
-                label={formatLabel(user.fit_score)}
+                label={getFitScoreLabel(user.fit_score)}
                 tone={getFitScoreTone(user.fit_score)}
               />
             ) : (
-              <StatusBadge label="No Fit Score" tone="muted" />
+              <StatusBadge label="Belum Ada Kecocokan" tone="muted" />
             )}
           </div>
         }
@@ -240,17 +248,14 @@ export default async function AdminUserDetailPage(
                 User Header
               </p>
               <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge label={getUserStatusLabel(user.status)} tone={getStatusTone(user.status)} />
                 <StatusBadge
-                  label={formatLabel(user.status)}
-                  tone={getStatusTone(user.status)}
-                />
-                <StatusBadge
-                  label={telegramStatus === "connected" ? "Connected" : "Not Connected"}
+                  label={telegramStatus === "connected" ? "Terhubung" : "Belum Terhubung"}
                   tone={getStatusTone(telegramStatus)}
                 />
                 {user.fit_score ? (
                   <StatusBadge
-                    label={formatLabel(user.fit_score)}
+                    label={getFitScoreLabel(user.fit_score)}
                     tone={getFitScoreTone(user.fit_score)}
                   />
                 ) : (
@@ -263,30 +268,30 @@ export default async function AdminUserDetailPage(
               href="/admin/users"
               className="inline-flex rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
             >
-              Back to Users
+              Kembali ke Tester
             </Link>
           </div>
       </section>
 
       <DetailSection
-        title="Quick Actions"
-        description="MVP founder tools for Telegram onboarding and mission delivery."
+        title="Aksi Cepat"
+        description="Alat cepat untuk onboarding Telegram dan pengiriman misi."
       >
           <div className="grid gap-4 md:grid-cols-3">
             <GenerateMagicLinkButton userId={user.id} />
             <SendMissionButton userId={user.id} />
             <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                Telegram Status
+                Status Telegram
               </p>
               <p className="mt-2 text-sm font-medium text-slate-900">
-                {telegramStatus === "connected" ? "Connected" : "Not Connected"}
+                {telegramStatus === "connected" ? "Terhubung" : "Belum Terhubung"}
               </p>
             </div>
           </div>
       </DetailSection>
 
-      <DetailSection title="User Profile">
+      <DetailSection title="Profil Tester">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <InfoRow label="Full Name" value={user.full_name || "-"} />
             <InfoRow label="WhatsApp Number" value={user.whatsapp_number || "-"} />
@@ -302,7 +307,7 @@ export default async function AdminUserDetailPage(
           </div>
       </DetailSection>
 
-      <DetailSection title="Business Profile">
+      <DetailSection title="Profil Bisnis">
           {businessProfile ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <InfoRow label="Business Name" value={businessProfile.business_name} />
@@ -344,12 +349,12 @@ export default async function AdminUserDetailPage(
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-sm text-slate-600">
-              No business profile found for this user yet.
+              Belum ada profil bisnis untuk tester ini.
             </div>
           )}
       </DetailSection>
 
-      <DetailSection title="Product Focus">
+      <DetailSection title="Produk Fokus">
           {productFocus ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <InfoRow label="Product Name" value={productFocus.product_name} />
@@ -370,12 +375,12 @@ export default async function AdminUserDetailPage(
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-sm text-slate-600">
-              No product focus found for this user yet.
+              Belum ada produk fokus untuk tester ini.
             </div>
           )}
       </DetailSection>
 
-      <DetailSection title="Performance Summary">
+      <DetailSection title="Progress Jualan">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <InfoRow
               label="Total Mission Days"
@@ -401,10 +406,7 @@ export default async function AdminUserDetailPage(
           </div>
       </DetailSection>
 
-      <DetailSection
-        title="Latest Missions"
-        description="Most recent seven mission days, including item completion and report outcomes."
-      >
+      <DetailSection title="Misi Terbaru" description="Tujuh hari misi terbaru, termasuk aksi yang selesai dan hasil laporannya.">
           {latestMissions.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-sm text-slate-600">
               No missions available for this user yet.
@@ -419,11 +421,11 @@ export default async function AdminUserDetailPage(
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div className="space-y-2">
                       <h3 className="text-lg font-semibold text-slate-950">
-                        Mission {mission.mission_date}
+                        Misi {mission.mission_date}
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         <StatusBadge
-                          label={formatLabel(mission.mission_status)}
+                          label={getMissionStatusLabel(mission.mission_status)}
                           tone={getStatusTone(mission.mission_status)}
                         />
                         <StatusBadge
@@ -433,15 +435,15 @@ export default async function AdminUserDetailPage(
                       </div>
                     </div>
                     <p className="text-sm text-slate-500">
-                      Sent at: {formatDateTime(mission.sent_at)}
+                      Dikirim: {formatDateTime(mission.sent_at)}
                     </p>
                   </div>
 
                   <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                     <InfoRow label="Mission Date" value={mission.mission_date} />
                     <InfoRow
-                      label="Mission Status"
-                      value={formatLabel(mission.mission_status)}
+                      label="Status Misi"
+                      value={getMissionStatusLabel(mission.mission_status)}
                     />
                     <InfoRow
                       label="Delivery Channel"
@@ -452,11 +454,11 @@ export default async function AdminUserDetailPage(
 
                   <div className="mt-5">
                     <p className="text-sm font-semibold text-slate-900">
-                      Mission Items
+                      Aksi Jualan
                     </p>
                     {items.length === 0 ? (
                       <div className="mt-3 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-6 text-sm text-slate-600">
-                        No mission items found.
+                        Belum ada aksi jualan untuk misi ini.
                       </div>
                     ) : (
                       <div className="mt-3 space-y-3">
@@ -475,17 +477,17 @@ export default async function AdminUserDetailPage(
 
                   <div className="mt-5 grid gap-4 xl:grid-cols-2">
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                      <p className="text-sm font-semibold text-slate-900">Report</p>
+                      <p className="text-sm font-semibold text-slate-900">Laporan Hasil</p>
                       {report ? (
                         <div className="mt-3 grid gap-3 md:grid-cols-2">
-                          <InfoRow label="Report Code" value={report.report_code} />
-                          <InfoRow label="RGA Count" value={report.rga_count} />
+                          <InfoRow label="Hasil Laporan" value={getReportCodeLabel(report.report_code)} />
+                          <InfoRow label="Aksi Jualan" value={report.rga_count} />
                           <InfoRow
-                            label="Closing Status"
-                            value={report.closing_status ? "Yes" : "No"}
+                            label="Closing"
+                            value={report.closing_status ? "Ya" : "Belum"}
                           />
                           <InfoRow
-                            label="Revenue Amount"
+                            label="Omzet"
                             value={formatCurrency(report.revenue_amount)}
                           />
                           <InfoRow
@@ -499,14 +501,14 @@ export default async function AdminUserDetailPage(
                         </div>
                       ) : (
                         <p className="mt-3 text-sm text-slate-600">
-                          No report submitted for this mission.
+                          Belum ada laporan hasil untuk misi ini.
                         </p>
                       )}
                     </div>
 
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                       <p className="text-sm font-semibold text-slate-900">
-                        Evaluation
+                        Evaluasi Harian
                       </p>
                       {evaluation ? (
                         <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -533,7 +535,7 @@ export default async function AdminUserDetailPage(
                         </div>
                       ) : (
                         <p className="mt-3 text-sm text-slate-600">
-                          No evaluation recorded for this mission yet.
+                          Belum ada evaluasi untuk misi ini.
                         </p>
                       )}
                     </div>
@@ -544,7 +546,7 @@ export default async function AdminUserDetailPage(
           )}
       </DetailSection>
 
-      <DetailSection title="Recent Activity Logs">
+      <DetailSection title="Riwayat Aktivitas">
         <ActivityLogList
           logs={recentActivityLogs}
           formatDateTime={formatDateTime}
@@ -552,10 +554,10 @@ export default async function AdminUserDetailPage(
         />
       </DetailSection>
 
-      <DetailSection title="Payment Validation">
+      <DetailSection title="Sinyal Bayar">
           {paymentValidations.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-sm text-slate-600">
-              No payment validation records available.
+              Belum ada catatan sinyal bayar untuk tester ini.
             </div>
           ) : (
             <div className="space-y-4">
@@ -565,18 +567,18 @@ export default async function AdminUserDetailPage(
                   className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
                 >
                   <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <InfoRow label="Offer Type" value={payment.offer_type} />
+                    <InfoRow label="Penawaran" value={getOfferTypeLabel(payment.offer_type)} />
                     <InfoRow
-                      label="Verbal Intent"
+                      label="Minat Verbal"
                       value={payment.verbal_intent || "-"}
                     />
                     <InfoRow
-                      label="Commitment Action"
+                      label="Komitmen"
                       value={formatBoolean(payment.commitment_action)}
                     />
                     <InfoRow
-                      label="Payment Action"
-                      value={payment.payment_action}
+                      label="Status Bayar"
+                      value={getPaymentActionLabel(payment.payment_action)}
                     />
                     <InfoRow
                       label="Amount Paid"

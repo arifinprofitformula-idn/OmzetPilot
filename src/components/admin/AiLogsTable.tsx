@@ -45,18 +45,18 @@ export function AiLogsTable({ rows }: AiLogsTableProps) {
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">
             <tr className="text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              <th className="px-5 py-4">Created At</th>
-              <th className="px-5 py-4">User</th>
-              <th className="px-5 py-4">Mission ID</th>
-              <th className="px-5 py-4">Prompt Version</th>
-              <th className="px-5 py-4">Provider</th>
+              <th className="px-5 py-4">Waktu</th>
+              <th className="px-5 py-4">Tester</th>
+              <th className="px-5 py-4">Misi</th>
+              <th className="px-5 py-4">Versi Arahan</th>
+              <th className="px-5 py-4">Penyedia AI</th>
               <th className="px-5 py-4">Model</th>
               <th className="px-5 py-4">Status</th>
-              <th className="px-5 py-4">Token Input</th>
-              <th className="px-5 py-4">Token Output</th>
-              <th className="px-5 py-4">Estimated Cost</th>
-              <th className="px-5 py-4">Error Message</th>
-              <th className="px-5 py-4">Action</th>
+              <th className="px-5 py-4">Input</th>
+              <th className="px-5 py-4">Output</th>
+              <th className="px-5 py-4">Estimasi Biaya</th>
+              <th className="px-5 py-4">Catatan Kendala</th>
+              <th className="px-5 py-4">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -68,7 +68,7 @@ export function AiLogsTable({ rows }: AiLogsTableProps) {
                 <td className="px-5 py-4">
                   <div className="space-y-1">
                     <p className="font-semibold text-slate-900">
-                      {row.user?.full_name ?? "Unknown User"}
+                      {row.user?.full_name ?? "Tester Tidak Dikenal"}
                     </p>
                     <p className="text-xs text-slate-500">
                       {row.user?.whatsapp_number ?? row.aiLog.user_id}
@@ -113,7 +113,7 @@ export function AiLogsTable({ rows }: AiLogsTableProps) {
                       href={`/admin/users/${row.aiLog.user_id}`}
                       className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                     >
-                      View User Detail
+                      Lihat Tester
                     </Link>
                     {row.aiLog.mission_id ? (
                       <Link
@@ -124,11 +124,11 @@ export function AiLogsTable({ rows }: AiLogsTableProps) {
                         }
                         className="rounded-lg border border-sky-200 px-3 py-2 text-sm font-medium text-sky-700 transition-colors hover:bg-sky-50"
                       >
-                        View Mission Monitor
+                        Lihat Misi
                       </Link>
                     ) : (
                       <span className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-400">
-                        No Mission Link
+                        Belum Ada Tautan
                       </span>
                     )}
                   </div>

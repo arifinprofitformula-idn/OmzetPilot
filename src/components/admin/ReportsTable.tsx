@@ -37,17 +37,17 @@ export function ReportsTable({ rows }: ReportsTableProps) {
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">
             <tr className="text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              <th className="px-5 py-4">Reported At</th>
-              <th className="px-5 py-4">Mission Date</th>
-              <th className="px-5 py-4">User</th>
-              <th className="px-5 py-4">Report Code</th>
-              <th className="px-5 py-4">RGA Count</th>
-              <th className="px-5 py-4">Chats Sent</th>
-              <th className="px-5 py-4">Responses</th>
+              <th className="px-5 py-4">Waktu Lapor</th>
+              <th className="px-5 py-4">Tanggal Misi</th>
+              <th className="px-5 py-4">Tester</th>
+              <th className="px-5 py-4">Hasil Laporan</th>
+              <th className="px-5 py-4">Aksi Jualan</th>
+              <th className="px-5 py-4">Chat Dikirim</th>
+              <th className="px-5 py-4">Respon</th>
               <th className="px-5 py-4">Closing</th>
-              <th className="px-5 py-4">Revenue</th>
-              <th className="px-5 py-4">Obstacle</th>
-              <th className="px-5 py-4">Action</th>
+              <th className="px-5 py-4">Omzet</th>
+              <th className="px-5 py-4">Kendala</th>
+              <th className="px-5 py-4">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -62,7 +62,7 @@ export function ReportsTable({ rows }: ReportsTableProps) {
                 <td className="px-5 py-4">
                   <div className="space-y-1">
                     <p className="font-semibold text-slate-900">
-                      {row.user?.full_name ?? "Unknown User"}
+                      {row.user?.full_name ?? "Tester Tidak Dikenal"}
                     </p>
                     <p className="text-xs text-slate-500">
                       {row.user?.whatsapp_number ?? row.report.user_id}
@@ -83,7 +83,7 @@ export function ReportsTable({ rows }: ReportsTableProps) {
                 </td>
                 <td className="px-5 py-4">
                   <StatusBadge
-                    label={row.report.closing_status ? "Yes" : "No"}
+                    label={row.report.closing_status ? "Ya" : "Belum"}
                     tone={row.report.closing_status ? "success" : "muted"}
                   />
                 </td>
@@ -99,13 +99,13 @@ export function ReportsTable({ rows }: ReportsTableProps) {
                       href={`/admin/users/${row.report.user_id}`}
                       className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                     >
-                      View User Detail
+                      Lihat Tester
                     </Link>
                     <Link
                       href={`/admin/missions?date=${row.mission?.mission_date ?? ""}`}
                       className="rounded-lg border border-sky-200 px-3 py-2 text-sm font-medium text-sky-700 transition-colors hover:bg-sky-50"
                     >
-                      View Mission Monitor
+                      Lihat Misi
                     </Link>
                   </div>
                 </td>

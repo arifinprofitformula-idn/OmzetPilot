@@ -1,4 +1,8 @@
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
+import {
+  getOfferTypeLabel,
+  getPaymentActionLabel,
+} from "@/src/lib/uiLanguage";
 
 type PaymentStatusBadgeProps = {
   kind: "payment_action" | "offer_type" | "verbal_intent";
@@ -13,13 +17,13 @@ function getLabel(kind: PaymentStatusBadgeProps["kind"], value: string | null) {
   if (kind === "payment_action") {
     switch (value) {
       case "paid":
-        return "Paid";
+        return getPaymentActionLabel("paid");
       case "pending":
-        return "Pending";
+        return getPaymentActionLabel("pending");
       case "no":
-        return "No";
+        return getPaymentActionLabel("no");
       case "not_offered":
-        return "Not Offered";
+        return getPaymentActionLabel("not_offered");
       default:
         return value.replaceAll("_", " ");
     }
@@ -28,9 +32,9 @@ function getLabel(kind: PaymentStatusBadgeProps["kind"], value: string | null) {
   if (kind === "offer_type") {
     switch (value) {
       case "founder_trial_extension":
-        return "Trial Extension";
+        return getOfferTypeLabel("founder_trial_extension");
       case "founder_plan":
-        return "Founder Plan";
+        return getOfferTypeLabel("founder_plan");
       default:
         return value.replaceAll("_", " ");
     }
@@ -39,11 +43,11 @@ function getLabel(kind: PaymentStatusBadgeProps["kind"], value: string | null) {
   if (kind === "verbal_intent") {
     switch (value) {
       case "yes":
-        return "Yes";
+        return "Tertarik";
       case "maybe":
-        return "Maybe";
+        return "Masih Pertimbangkan";
       case "no":
-        return "No";
+        return "Belum Berminat";
       default:
         return value.replaceAll("_", " ");
     }

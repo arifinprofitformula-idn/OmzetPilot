@@ -3,15 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { adminNavLabels } from "@/src/lib/uiLanguage";
+
 const adminNavItems = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/users", label: "Users" },
-  { href: "/admin/missions", label: "Missions" },
-  { href: "/admin/reports", label: "Reports" },
-  { href: "/admin/ai-logs", label: "AI Logs" },
-  { href: "/admin/payment", label: "Payment" },
-  { href: "/admin/settings", label: "Settings" },
-  { href: "/admin/qa", label: "QA" },
+  { href: "/admin", label: adminNavLabels.dashboard },
+  { href: "/admin/users", label: adminNavLabels.users },
+  { href: "/admin/missions", label: adminNavLabels.missions },
+  { href: "/admin/reports", label: adminNavLabels.reports },
+  { href: "/admin/ai-logs", label: adminNavLabels.aiLogs },
+  { href: "/admin/payment", label: adminNavLabels.payment },
+  { href: "/admin/settings", label: adminNavLabels.settings },
+  { href: "/admin/qa", label: adminNavLabels.qa },
+  { href: "/admin/dogfooding", label: adminNavLabels.dogfooding },
 ];
 
 function isActivePath(pathname: string, href: string) {
@@ -60,7 +63,7 @@ export function AdminSidebar() {
           </nav>
 
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
-            Internal MVP • Founder Console
+            Internal MVP • Ruang Kendali OmzetPilot
           </div>
         </div>
       </aside>

@@ -9,9 +9,9 @@ type SendMissionButtonProps = {
 export function SendMissionButton({ userId }: SendMissionButtonProps) {
   return (
     <AdminActionButton
-      label="Send Mission"
-      loadingLabel="Sending..."
-      successLabel="Mission sent to Telegram."
+      label="Kirim Misi"
+      loadingLabel="Mengirim..."
+      successLabel="Misi berhasil dikirim ke Telegram."
       endpoint="/api/admin/actions/send-mission"
       payload={{ userId }}
       variant="primary"

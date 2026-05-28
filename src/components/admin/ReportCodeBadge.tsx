@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
+import { getReportCodeLabel as getFriendlyReportCodeLabel } from "@/src/lib/uiLanguage";
 
 type ReportCodeBadgeProps = {
   reportCode: string | null;
@@ -22,13 +23,13 @@ function getReportCodeTone(reportCode: string | null) {
 function getReportCodeLabel(reportCode: string | null) {
   switch (reportCode) {
     case "1":
-      return "1 Closing";
+      return `1 • ${getFriendlyReportCodeLabel("1")}`;
     case "2":
-      return "2 Progress";
+      return `2 • ${getFriendlyReportCodeLabel("2")}`;
     case "3":
-      return "3 Follow Up";
+      return `3 • ${getFriendlyReportCodeLabel("3")}`;
     case "4":
-      return "4 Blocked";
+      return `4 • ${getFriendlyReportCodeLabel("4")}`;
     default:
       return "-";
   }

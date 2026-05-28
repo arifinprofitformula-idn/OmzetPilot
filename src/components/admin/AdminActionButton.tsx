@@ -53,14 +53,14 @@ export function AdminActionButton({
         | null;
 
       if (!response.ok || !data?.ok) {
-        throw new Error(data?.error || "Action failed");
+        throw new Error(data?.error || "Aksi gagal dijalankan");
       }
 
-      setMessage(successLabel ?? "Action completed.");
+      setMessage(successLabel ?? "Aksi selesai dijalankan.");
       setMessageTone("success");
       onSuccess?.(data);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Action failed");
+      setMessage(error instanceof Error ? error.message : "Aksi gagal dijalankan");
       setMessageTone("error");
     } finally {
       setLoading(false);

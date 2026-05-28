@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
+import { getMissionStatusLabel } from "@/src/lib/uiLanguage";
 
 type MissionStatusBadgeProps = {
   status: string;
@@ -20,14 +21,10 @@ function getMissionStatusTone(status: string) {
   }
 }
 
-function formatLabel(value: string) {
-  return value.replaceAll("_", " ");
-}
-
 export function MissionStatusBadge({ status }: MissionStatusBadgeProps) {
   return (
     <StatusBadge
-      label={formatLabel(status)}
+      label={getMissionStatusLabel(status)}
       tone={getMissionStatusTone(status)}
     />
   );

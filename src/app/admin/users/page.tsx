@@ -7,7 +7,7 @@ import { UserTable } from "@/src/components/admin/UserTable";
 import { getAdminUsersPageData } from "@/src/lib/adminUsers";
 
 export const metadata: Metadata = {
-  title: "Users Management | OmzetPilot",
+  title: "Kelola Tester | OmzetPilot",
   description:
     "Founder view for monitoring users, Telegram connectivity, and alpha cohort progress.",
 };
@@ -21,33 +21,33 @@ export default async function AdminUsersPage() {
   return (
     <>
       <AdminPageHeader
-        title="Users Management"
-        subtitle="Monitor alpha testers, Telegram connection, and sales activity progress."
+        title="Kelola Tester"
+        subtitle="Pantau kesiapan data, koneksi Telegram, dan progress aksi jualan setiap tester."
       />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Total Users"
+          label="Total Tester"
           value={summary.totalUsers}
-          description="All users currently stored in the system."
+          description="Semua tester yang sudah terdaftar."
           tone="neutral"
         />
         <StatCard
-          label="Telegram Connected"
+          label="Telegram Terhubung"
           value={summary.telegramConnected}
-          description="Users with a linked Telegram chat ID."
+          description="Tester yang sudah tersambung ke Telegram."
           tone="info"
         />
         <StatCard
-          label="Active Users"
+          label="Tester Aktif"
           value={summary.activeUsers}
-          description="Users currently marked as active."
+          description="Tester yang masih aktif berjalan."
           tone="success"
         />
         <StatCard
-          label="Needs Attention"
+          label="Perlu Dibantu"
           value={summary.needsAttention}
-          description="Users currently marked at risk or inactive."
+          description="Tester yang perlu dibantu atau belum bergerak."
           tone="warning"
         />
       </section>
@@ -56,11 +56,10 @@ export default async function AdminUsersPage() {
         <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-8 py-16 text-center shadow-sm">
           <div className="mx-auto max-w-xl space-y-3">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-              No users found yet
+              Belum ada tester
             </h2>
             <p className="text-sm leading-6 text-slate-600">
-              The admin table will appear here once alpha testers are stored in
-              Supabase.
+              Tambahkan tester dulu agar OmzetPilot bisa mulai diuji.
             </p>
           </div>
         </section>

@@ -26,7 +26,7 @@ type MissionRow = Pick<
 >;
 type MissionItemRow = Pick<
   Tables<"mission_items">,
-  "id" | "mission_id" | "status" | "completed_at"
+  "id" | "mission_id" | "status" | "completed_at" | "user_id"
 >;
 type MissionReportRow = Pick<
   Tables<"mission_reports">,
@@ -232,6 +232,19 @@ function mapPaymentSignalLabel(payment: PaymentValidationRow | null) {
   return "Belum Ada";
 }
 
+function missionPriority(missionStatus: MissionRow["mission_status"]) {
+  switch (missionStatus) {
+    case "reported":
+      return 3;
+    case "sent":
+      return 2;
+    case "drafted":
+      return 1;
+    default:
+      return 0;
+  }
+}
+
 function getFollowUpRecommendation(input: {
   hasBusinessProfile: boolean;
   hasProductFocus: boolean;
@@ -384,7 +397,6 @@ export async function getAdminDogfoodingData(input: {
     businessProfiles,
     products,
     missions,
-    missionItems,
     missionReports,
     missionEvaluations,
     userActivityLogs,
@@ -415,23 +427,8 @@ export async function getAdminDogfoodingData(input: {
           .from("missions")
           .select("id, user_id, mission_date, mission_status, sent_at")
           .eq("mission_date", filters.date)
-          .in("user_id", userIds),
-      warnings
-    ),
-    safeSelect<MissionItemRow>(
-      "aksi jualan",
-      () =>
-        supabaseAdmin
-          .from("mission_items")
-          .select("id, mission_id, status, completed_at")
-          .in(
-            "mission_id",
-            supabaseAdmin
-              .from("missions")
-              .select("id")
-              .eq("mission_date", filters.date)
-              .in("user_id", userIds)
-          ) as never,
+          .in("user_id", userIds)
+          .order("sent_at", { ascending: false, nullsFirst: false }),
       warnings
     ),
     safeSelect<MissionReportRow>(
@@ -475,6 +472,20 @@ export async function getAdminDogfoodingData(input: {
     ),
   ]);
 
+  const missionIds = missions.map((mission) => mission.id);
+  const missionItems =
+    missionIds.length === 0
+      ? []
+      : await safeSelect<MissionItemRow>(
+          "aksi jualan",
+          () =>
+            supabaseAdmin
+              .from("mission_items")
+              .select("id, mission_id, status, completed_at, user_id")
+              .in("mission_id", missionIds),
+          warnings
+        );
+
   const businessProfileMap = new Map<string, BusinessProfileRow>();
   for (const profile of businessProfiles) {
     const existing = businessProfileMap.get(profile.user_id);
@@ -495,12 +506,18 @@ export async function getAdminDogfoodingData(input: {
 
   const missionMap = new Map<string, MissionRow>();
   for (const mission of missions) {
-    missionMap.set(mission.user_id, mission);
+    const existing = missionMap.get(mission.user_id);
+
+    if (
+      !existing ||
+      missionPriority(mission.mission_status) > missionPriority(existing.mission_status)
+    ) {
+      missionMap.set(mission.user_id, mission);
+    }
   }
 
-  const missionIds = missions.map((mission) => mission.id);
   const missionItemsByMissionId = new Map<string, MissionItemRow[]>();
-  for (const item of missionItems.filter((item) => missionIds.includes(item.mission_id))) {
+  for (const item of missionItems) {
     const current = missionItemsByMissionId.get(item.mission_id) ?? [];
     current.push(item);
     missionItemsByMissionId.set(item.mission_id, current);
@@ -518,8 +535,7 @@ export async function getAdminDogfoodingData(input: {
     }
   }
 
-  const testers = users
-    .map<DogfoodingUserRowData>((user) => {
+  const allTesters = users.map<DogfoodingUserRowData>((user) => {
       const businessProfile = businessProfileMap.get(user.id) ?? null;
       const product = productMap.get(user.id) ?? null;
       const mission = missionMap.get(user.id) ?? null;
@@ -565,57 +581,62 @@ export async function getAdminDogfoodingData(input: {
           payment,
         }),
       };
-    })
-    .filter((row) => matchesStatusFilter(row, filters.status));
+    });
 
-  const totalTester = users.length;
-  const siapDiuji = users.filter((user) => {
-    return Boolean(
-      businessProfileMap.get(user.id) &&
-        productMap.get(user.id) &&
-        user.consent_given
-    );
-  }).length;
-  const telegramTerhubung = users.filter((user) => Boolean(user.telegram_chat_id)).length;
-  const misiTerkirimHariIni = users.filter((user) => {
-    const mission = missionMap.get(user.id);
-    return mission ? ["sent", "reported"].includes(mission.mission_status) : false;
-  }).length;
-  const sudahBergerakHariIni = users.filter((user) => {
-    const mission = missionMap.get(user.id);
-    if (!mission) {
-      return false;
-    }
+  const testers = allTesters.filter((row) => matchesStatusFilter(row, filters.status));
 
-    const items = missionItemsByMissionId.get(mission.id) ?? [];
-    return items.some((item) => item.status === "done");
-  }).length;
-  const sudahLaporHariIni = users.filter((user) => reportByUserId.has(user.id)).length;
-  const perluFollowUp = users.filter((user) => {
-    const mission = missionMap.get(user.id);
-    const report = reportByUserId.get(user.id);
-    return user.status === "active" && (!report || !user.telegram_chat_id || !mission);
-  }).length;
-  const adaSinyalBayar = users.filter((user) => {
-    const payment = latestPaymentByUserId.get(user.id);
-    return payment
-      ? ["yes", "maybe"].includes(payment.verbal_intent ?? "") ||
-          ["paid", "pending"].includes(payment.payment_action)
-      : false;
-  }).length;
+  const totalTester = testers.length;
+  const siapDiuji = testers.filter((tester) => tester.readyToTest).length;
+  const telegramTerhubung = testers.filter((tester) => tester.telegramConnected).length;
+  const misiTerkirimHariIni = testers.filter((tester) =>
+    ["Terkirim", "Sudah Dilaporkan"].includes(tester.missionStatusLabel)
+  ).length;
+  const sudahBergerakHariIni = testers.filter((tester) => tester.doneItemsCount > 0).length;
+  const sudahLaporHariIni = testers.filter((tester) => tester.hasReportToday).length;
+  const perluFollowUp = testers.filter((tester) => tester.needsFollowUp).length;
+  const adaSinyalBayar = testers.filter((tester) =>
+    ["Paid", "Pending", "Tertarik"].includes(tester.paymentSignalLabel)
+  ).length;
+
+  const funnelTotal = allTesters.length;
 
   const funnel = [
-    { label: "Data Tester Masuk", count: totalTester },
-    { label: "Profil Bisnis Lengkap", count: usersWithBusinessProfileCount(users, businessProfileMap) },
-    { label: "Produk Fokus Siap", count: usersWithProductFocusCount(users, productMap) },
-    { label: "Telegram Terhubung", count: telegramTerhubung },
-    { label: "Misi Dikirim", count: misiTerkirimHariIni },
-    { label: "Aksi Jualan Selesai", count: sudahBergerakHariIni },
-    { label: "Laporan Masuk", count: sudahLaporHariIni },
-    { label: "Sinyal Bayar", count: adaSinyalBayar },
+    { label: "Data Tester Masuk", count: funnelTotal },
+    {
+      label: "Profil Bisnis Lengkap",
+      count: allTesters.filter((tester) => tester.hasBusinessProfile).length,
+    },
+    {
+      label: "Produk Fokus Siap",
+      count: allTesters.filter((tester) => tester.hasProductFocus).length,
+    },
+    {
+      label: "Telegram Terhubung",
+      count: allTesters.filter((tester) => tester.telegramConnected).length,
+    },
+    {
+      label: "Misi Dikirim",
+      count: allTesters.filter((tester) =>
+        ["Terkirim", "Sudah Dilaporkan"].includes(tester.missionStatusLabel)
+      ).length,
+    },
+    {
+      label: "Aksi Jualan Selesai",
+      count: allTesters.filter((tester) => tester.doneItemsCount > 0).length,
+    },
+    {
+      label: "Laporan Masuk",
+      count: allTesters.filter((tester) => tester.hasReportToday).length,
+    },
+    {
+      label: "Sinyal Bayar",
+      count: allTesters.filter((tester) =>
+        ["Paid", "Pending", "Tertarik"].includes(tester.paymentSignalLabel)
+      ).length,
+    },
   ].map((step) => ({
     ...step,
-    percentage: percentage(step.count, totalTester),
+    percentage: percentage(step.count, funnelTotal),
   }));
 
   const focusQueues = {
@@ -686,18 +707,4 @@ export async function getAdminDogfoodingData(input: {
     focusQueues,
     warnings,
   };
-}
-
-function usersWithBusinessProfileCount(
-  users: UserRow[],
-  businessProfileMap: Map<string, BusinessProfileRow>
-) {
-  return users.filter((user) => businessProfileMap.has(user.id)).length;
-}
-
-function usersWithProductFocusCount(
-  users: UserRow[],
-  productMap: Map<string, ProductRow>
-) {
-  return users.filter((user) => productMap.has(user.id)).length;
 }

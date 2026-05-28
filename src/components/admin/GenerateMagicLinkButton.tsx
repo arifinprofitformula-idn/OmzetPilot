@@ -30,9 +30,9 @@ export function GenerateMagicLinkButton({
   return (
     <div className="space-y-2">
       <AdminActionButton
-        label="Generate Magic Link"
-        loadingLabel="Generating..."
-        successLabel="Magic link generated."
+        label="Buat Magic Link"
+        loadingLabel="Membuat..."
+        successLabel="Magic link berhasil dibuat."
         endpoint="/api/admin/actions/generate-magic-link"
         payload={{ userId }}
         variant="secondary"
@@ -55,7 +55,7 @@ export function GenerateMagicLinkButton({
             onClick={handleCopy}
             className="rounded-md border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-white"
           >
-            {copied ? "Copied" : "Copy"}
+            {copied ? "Tersalin" : "Salin"}
           </button>
         </div>
       ) : null}

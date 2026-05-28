@@ -8,8 +8,8 @@ import { StatCard } from "@/src/components/admin/StatCard";
 import { getAdminMissionsData } from "@/src/lib/adminMissions";
 
 export const metadata: Metadata = {
-  title: "Mission Monitor | OmzetPilot",
-  description: "Founder mission monitoring dashboard for OmzetPilot.",
+  title: "Pantauan Misi Jualan | OmzetPilot",
+  description: "Pantauan misi jualan harian untuk tester OmzetPilot.",
 };
 
 type AdminMissionsPageProps = {
@@ -36,12 +36,12 @@ export default async function AdminMissionsPage({
   return (
     <>
       <AdminPageHeader
-        title="Mission Monitor"
-        subtitle="Track daily mission delivery, RGA progress, and report status."
+        title="Pantauan Misi Jualan"
+        subtitle="Lihat siapa yang sudah menerima misi, menjalankan aksi, dan perlu diingatkan."
         actions={
           <div className="flex flex-col gap-3 md:items-end">
             <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-              <p className="font-medium text-slate-900">Selected Date</p>
+              <p className="font-medium text-slate-900">Tanggal Dipilih</p>
               <p>{data.filters.date}</p>
             </div>
             <div className="w-full md:w-80">
@@ -54,7 +54,7 @@ export default async function AdminMissionsPage({
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
         <form className="grid gap-4 md:grid-cols-4 md:items-end" method="get">
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">Date</span>
+            <span className="text-sm font-medium text-slate-700">Tanggal</span>
             <input
               type="date"
               name="date"
@@ -65,34 +65,34 @@ export default async function AdminMissionsPage({
 
             <label className="space-y-2">
               <span className="text-sm font-medium text-slate-700">
-                Mission Status
+                Status Misi
               </span>
               <select
                 name="status"
                 defaultValue={data.filters.status}
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
               >
-                <option value="all">All</option>
-                <option value="drafted">Drafted</option>
-                <option value="sent">Sent</option>
-                <option value="reported">Reported</option>
-                <option value="missed">Missed</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="all">Semua</option>
+                <option value="drafted">Belum Dikirim</option>
+                <option value="sent">Misi Terkirim</option>
+                <option value="reported">Sudah Lapor</option>
+                <option value="missed">Terlewat</option>
+                <option value="cancelled">Dibatalkan</option>
               </select>
             </label>
 
             <label className="space-y-2">
               <span className="text-sm font-medium text-slate-700">
-                Report Status
+                Status Laporan
               </span>
               <select
                 name="report"
                 defaultValue={data.filters.report}
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400"
               >
-                <option value="all">All</option>
-                <option value="reported">Reported</option>
-                <option value="not_reported">Not Reported</option>
+                <option value="all">Semua</option>
+                <option value="reported">Sudah Lapor</option>
+                <option value="not_reported">Belum Lapor</option>
               </select>
             </label>
 
@@ -100,46 +100,46 @@ export default async function AdminMissionsPage({
               type="submit"
               className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
-              Apply
+              Terapkan
             </button>
         </form>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard
-          label="Total Missions"
+          label="Total Misi"
           value={data.summary.totalMissions}
-          description="Missions matching the current filter."
+          description="Jumlah misi yang masuk ke filter ini."
           tone="neutral"
         />
           <StatCard
-            label="Sent Missions"
+            label="Misi Terkirim"
             value={data.summary.sentMissions}
-            description="Missions already delivered."
+            description="Misi yang sudah sampai ke tester."
             tone="info"
           />
           <StatCard
-            label="Reported Missions"
+            label="Sudah Lapor"
             value={data.summary.reportedMissions}
-            description="Missions with a submitted report."
+            description="Misi yang sudah punya laporan hasil."
             tone="success"
           />
           <StatCard
-            label="Total RGA"
+            label="Aksi Jualan"
             value={data.summary.totalRga}
-            description="Progress counted from reports or done items."
+            description="Aksi jualan atau RGA yang sudah tercatat."
             tone="success"
           />
           <StatCard
-            label="Closing Reports"
+            label="Ada Closing"
             value={data.summary.closingReports}
-            description="Reports marked as closing outcomes."
+            description="Laporan dengan tanda closing."
             tone="warning"
           />
           <StatCard
-            label="Needs Report"
+            label="Belum Lapor"
             value={data.summary.needsReport}
-            description="Missions still waiting for a report."
+            description="Misi yang masih menunggu laporan hasil."
             tone="danger"
           />
       </section>
@@ -148,10 +148,10 @@ export default async function AdminMissionsPage({
         <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-8 py-16 text-center shadow-sm">
           <div className="mx-auto max-w-xl space-y-3">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-              No missions found for the selected filter.
+              Belum ada misi pada filter ini.
             </h2>
             <p className="text-sm leading-6 text-slate-600">
-              Try a different date or broaden the mission and report filters.
+              Jika tester sudah siap, kirim misi dari halaman Tester.
             </p>
           </div>
         </section>

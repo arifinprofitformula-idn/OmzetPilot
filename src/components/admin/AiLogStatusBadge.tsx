@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
+import { getFriendlyLabel } from "@/src/lib/uiLanguage";
 
 type AiLogStatusBadgeProps = {
   status: string;
@@ -20,5 +21,12 @@ function getTone(status: string) {
 }
 
 export function AiLogStatusBadge({ status }: AiLogStatusBadgeProps) {
-  return <StatusBadge label={formatLabel(status)} tone={getTone(status)} />;
+  const label =
+    status === "success"
+      ? "Berhasil"
+      : status === "failed"
+        ? "Perlu Dicek"
+        : getFriendlyLabel(formatLabel(status));
+
+  return <StatusBadge label={label} tone={getTone(status)} />;
 }

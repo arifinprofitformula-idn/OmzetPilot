@@ -6,8 +6,8 @@ import { StatCard } from "@/src/components/admin/StatCard";
 import { getDashboardStats } from "@/src/lib/dashboard";
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard | OmzetPilot",
-  description: "Founder dashboard for OmzetPilot daily mission operations.",
+  title: "Ruang Kendali OmzetPilot | OmzetPilot",
+  description: "Pantauan utama tester, misi jualan, dan laporan hasil OmzetPilot.",
 };
 
 export default async function AdminDashboardPage() {
@@ -19,11 +19,11 @@ export default async function AdminDashboardPage() {
   return (
     <>
       <AdminPageHeader
-        title="Daily Mission Engine Dashboard"
-        subtitle="Founder overview of user activity, mission delivery, and reporting performance for today in WIB."
+        title="Ruang Kendali OmzetPilot"
+        subtitle="Pantau tester, misi jualan, laporan hasil, dan sinyal bayar dalam satu tempat."
         actions={
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            <p className="font-medium text-slate-900">Today (WIB)</p>
+            <p className="font-medium text-slate-900">Hari Ini (WIB)</p>
             <p>{stats.todayWib}</p>
           </div>
         }
@@ -31,51 +31,51 @@ export default async function AdminDashboardPage() {
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Total Users"
+          label="Total Tester"
           value={stats.totalUsers}
-          description="All users currently stored in Supabase."
+          description="Semua tester yang sudah masuk ke sistem."
           tone="neutral"
         />
         <StatCard
-          label="Active Users"
+          label="Tester Aktif"
           value={stats.activeUsers}
-          description="Users with active status in the core user table."
+          description="Tester yang masih aktif mengikuti alur harian."
           tone="success"
         />
         <StatCard
-          label="Telegram Connected Users"
+          label="Telegram Terhubung"
           value={stats.telegramConnectedUsers}
-          description="Users with a linked Telegram chat ready for delivery."
+          description="Tester yang sudah siap menerima misi lewat Telegram."
           tone="info"
         />
         <StatCard
-          label="Missions Sent Today"
+          label="Misi Terkirim Hari Ini"
           value={stats.missionsSentToday}
-          description="Today's missions that have already been sent."
+          description="Jumlah misi hari ini yang sudah dikirim."
           tone="info"
         />
         <StatCard
-          label="RGA Today"
+          label="Aksi Jualan Hari Ini"
           value={stats.rgaToday}
-          description="Total reported RGA completed by users today."
+          description="Total aksi jualan atau RGA yang sudah dilaporkan hari ini."
           tone="success"
         />
         <StatCard
-          label="Reports Today"
+          label="Laporan Masuk Hari Ini"
           value={stats.reportsToday}
-          description="Mission reports received during today's WIB window."
+          description="Laporan hasil yang masuk pada hari ini."
           tone="neutral"
         />
         <StatCard
-          label="Closing Reports Today"
+          label="Closing Hari Ini"
           value={stats.closingReportsToday}
-          description="Reports marked as closing outcomes today."
+          description="Laporan yang sudah menunjukkan closing atau uang masuk."
           tone="warning"
         />
         <StatCard
-          label="At Risk Users"
+          label="Perlu Dibantu"
           value={stats.atRiskUsers}
-          description="Active Telegram users who have not reported yet today."
+          description="Tester aktif yang belum lapor atau masih perlu dorongan."
           tone="danger"
         />
       </section>

@@ -4,6 +4,10 @@ import { GenerateMagicLinkButton } from "@/src/components/admin/GenerateMagicLin
 import { SendMissionButton } from "@/src/components/admin/SendMissionButton";
 import type { AdminUserRecord } from "@/src/lib/adminUsers";
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
+import {
+  getFitScoreLabel,
+  getUserStatusLabel,
+} from "@/src/lib/uiLanguage";
 
 type UserTableProps = {
   users: AdminUserRecord[];
@@ -57,10 +61,10 @@ function getFitScoreTone(fitScore: string | null) {
 
 function getTelegramBadge(telegramStatus: AdminUserRecord["telegramStatus"]) {
   if (telegramStatus === "connected") {
-    return <StatusBadge label="Connected" tone="success" />;
+    return <StatusBadge label="Terhubung" tone="success" />;
   }
 
-  return <StatusBadge label="Not Connected" tone="danger" />;
+  return <StatusBadge label="Belum Terhubung" tone="danger" />;
 }
 
 export function UserTable({ users }: UserTableProps) {
@@ -70,16 +74,16 @@ export function UserTable({ users }: UserTableProps) {
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">
             <tr className="text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              <th className="px-5 py-4">Name</th>
+              <th className="px-5 py-4">Tester</th>
               <th className="px-5 py-4">WhatsApp</th>
-              <th className="px-5 py-4">Telegram Status</th>
-              <th className="px-5 py-4">User Status</th>
-              <th className="px-5 py-4">Fit Score</th>
-              <th className="px-5 py-4">Cohort</th>
-              <th className="px-5 py-4">Total RGA</th>
-              <th className="px-5 py-4">Total Reports</th>
-              <th className="px-5 py-4">Total Revenue</th>
-              <th className="px-5 py-4">Actions</th>
+              <th className="px-5 py-4">Telegram</th>
+              <th className="px-5 py-4">Status Tester</th>
+              <th className="px-5 py-4">Kecocokan</th>
+              <th className="px-5 py-4">Batch</th>
+              <th className="px-5 py-4">Total Aksi</th>
+              <th className="px-5 py-4">Total Laporan</th>
+              <th className="px-5 py-4">Total Omzet</th>
+              <th className="px-5 py-4">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -97,14 +101,14 @@ export function UserTable({ users }: UserTableProps) {
                 <td className="px-5 py-4">{getTelegramBadge(user.telegramStatus)}</td>
                 <td className="px-5 py-4">
                   <StatusBadge
-                    label={formatLabel(user.userStatus)}
+                    label={getUserStatusLabel(user.userStatus)}
                     tone={getUserStatusTone(user.userStatus)}
                   />
                 </td>
                 <td className="px-5 py-4">
                   {user.fitScore ? (
                     <StatusBadge
-                      label={formatLabel(user.fitScore)}
+                      label={getFitScoreLabel(user.fitScore)}
                       tone={getFitScoreTone(user.fitScore)}
                     />
                   ) : (
@@ -127,7 +131,7 @@ export function UserTable({ users }: UserTableProps) {
                       href={`/admin/users/${user.id}`}
                       className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                     >
-                      View Detail
+                      Lihat Detail
                     </Link>
                     <GenerateMagicLinkButton userId={user.id} />
                     <SendMissionButton userId={user.id} />

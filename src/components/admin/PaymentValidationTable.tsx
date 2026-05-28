@@ -49,19 +49,19 @@ export function PaymentValidationTable({
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">
             <tr className="text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              <th className="px-5 py-4">Created At</th>
-              <th className="px-5 py-4">User</th>
-              <th className="px-5 py-4">Cohort</th>
-              <th className="px-5 py-4">Offer Type</th>
-              <th className="px-5 py-4">Verbal Intent</th>
-              <th className="px-5 py-4">Commitment Action</th>
-              <th className="px-5 py-4">Payment Action</th>
-              <th className="px-5 py-4">Amount Paid</th>
-              <th className="px-5 py-4">Payment Method</th>
-              <th className="px-5 py-4">Payment Date</th>
-              <th className="px-5 py-4">Reason If No</th>
-              <th className="px-5 py-4">Follow Up Date</th>
-              <th className="px-5 py-4">Action</th>
+              <th className="px-5 py-4">Dicatat</th>
+              <th className="px-5 py-4">Tester</th>
+              <th className="px-5 py-4">Batch</th>
+              <th className="px-5 py-4">Penawaran</th>
+              <th className="px-5 py-4">Minat Verbal</th>
+              <th className="px-5 py-4">Komitmen</th>
+              <th className="px-5 py-4">Status Bayar</th>
+              <th className="px-5 py-4">Nominal</th>
+              <th className="px-5 py-4">Metode</th>
+              <th className="px-5 py-4">Tanggal Bayar</th>
+              <th className="px-5 py-4">Alasan Tidak Lanjut</th>
+              <th className="px-5 py-4">Jadwal Follow Up</th>
+              <th className="px-5 py-4">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -73,7 +73,7 @@ export function PaymentValidationTable({
                 <td className="px-5 py-4">
                   <div className="space-y-1">
                     <p className="font-semibold text-slate-900">
-                      {row.user?.full_name ?? "Unknown User"}
+                      {row.user?.full_name ?? "Tester Tidak Dikenal"}
                     </p>
                     <p className="text-xs text-slate-500">
                       {row.user?.whatsapp_number ?? row.paymentValidation.user_id}
@@ -96,7 +96,7 @@ export function PaymentValidationTable({
                   />
                 </td>
                 <td className="px-5 py-4 text-sm text-slate-700">
-                  {row.paymentValidation.commitment_action ? "Yes" : "No"}
+                  {row.paymentValidation.commitment_action ? "Ya" : "Belum"}
                 </td>
                 <td className="px-5 py-4">
                   <PaymentStatusBadge
@@ -124,7 +124,7 @@ export function PaymentValidationTable({
                     href={`/admin/users/${row.paymentValidation.user_id}`}
                     className="inline-flex rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                   >
-                    View User Detail
+                    Lihat Tester
                   </Link>
                 </td>
               </tr>

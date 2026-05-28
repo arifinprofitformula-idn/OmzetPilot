@@ -5,6 +5,7 @@ import { MissionStatusBadge } from "@/src/components/admin/MissionStatusBadge";
 import { ReportCodeBadge } from "@/src/components/admin/ReportCodeBadge";
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
 import type { MissionMonitorRow } from "@/src/lib/adminMissions";
+import { getMissionItemStatusLabel } from "@/src/lib/uiLanguage";
 
 type MissionMonitorTableProps = {
   rows: MissionMonitorRow[];
@@ -43,18 +44,18 @@ export function MissionMonitorTable({ rows }: MissionMonitorTableProps) {
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">
             <tr className="text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              <th className="px-5 py-4">Date</th>
-              <th className="px-5 py-4">User</th>
-              <th className="px-5 py-4">Telegram Status</th>
-              <th className="px-5 py-4">Mission Status</th>
-              <th className="px-5 py-4">Done Items</th>
-              <th className="px-5 py-4">RGA</th>
-              <th className="px-5 py-4">Report Status</th>
-              <th className="px-5 py-4">Report Code</th>
+              <th className="px-5 py-4">Tanggal</th>
+              <th className="px-5 py-4">Tester</th>
+              <th className="px-5 py-4">Telegram</th>
+              <th className="px-5 py-4">Status Misi</th>
+              <th className="px-5 py-4">Aksi Selesai</th>
+              <th className="px-5 py-4">Aksi Jualan</th>
+              <th className="px-5 py-4">Status Laporan</th>
+              <th className="px-5 py-4">Hasil Laporan</th>
               <th className="px-5 py-4">Closing</th>
-              <th className="px-5 py-4">Revenue</th>
-              <th className="px-5 py-4">Sent At</th>
-              <th className="px-5 py-4">Actions</th>
+              <th className="px-5 py-4">Omzet</th>
+              <th className="px-5 py-4">Waktu Kirim</th>
+              <th className="px-5 py-4">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -66,7 +67,7 @@ export function MissionMonitorTable({ rows }: MissionMonitorTableProps) {
                 <td className="px-5 py-4">
                   <div className="space-y-1">
                     <p className="font-semibold text-slate-900">
-                      {row.user?.full_name ?? "Unknown User"}
+                      {row.user?.full_name ?? "Tester Tidak Dikenal"}
                     </p>
                     <p className="text-xs text-slate-500">
                       {row.user?.whatsapp_number ?? row.mission.user_id}
@@ -77,8 +78,8 @@ export function MissionMonitorTable({ rows }: MissionMonitorTableProps) {
                   <StatusBadge
                     label={
                       row.telegramStatus === "connected"
-                        ? "Connected"
-                        : "Not Connected"
+                        ? "Terhubung"
+                        : "Belum Terhubung"
                     }
                     tone={row.telegramStatus === "connected" ? "success" : "danger"}
                   />
@@ -95,7 +96,7 @@ export function MissionMonitorTable({ rows }: MissionMonitorTableProps) {
                 <td className="px-5 py-4">
                   <StatusBadge
                     label={
-                      row.reportStatus === "reported" ? "Reported" : "Not Reported"
+                      row.reportStatus === "reported" ? "Sudah Lapor" : "Belum Lapor"
                     }
                     tone={row.reportStatus === "reported" ? "success" : "warning"}
                   />
@@ -104,7 +105,7 @@ export function MissionMonitorTable({ rows }: MissionMonitorTableProps) {
                   <ReportCodeBadge reportCode={row.report?.report_code ?? null} />
                 </td>
                 <td className="px-5 py-4 text-sm text-slate-700">
-                  {row.report?.closing_status ? "Yes" : "No"}
+                  {row.report?.closing_status ? "Ya" : "Belum"}
                 </td>
                 <td className="px-5 py-4 text-sm font-medium text-slate-900">
                   {formatCurrency(row.report?.revenue_amount ?? 0)}
@@ -118,13 +119,13 @@ export function MissionMonitorTable({ rows }: MissionMonitorTableProps) {
                       href={`/admin/users/${row.mission.user_id}`}
                       className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                     >
-                      View User Detail
+                      Lihat Tester
                     </Link>
                     <SendMissionButton userId={row.mission.user_id} />
                     {row.missionItems.length > 0 ? (
                       <details className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                         <summary className="cursor-pointer text-sm font-medium text-slate-700">
-                          View Mission Items
+                          Lihat Aksi Jualan
                         </summary>
                         <div className="mt-3 space-y-3">
                           {row.missionItems.map((item) => (
@@ -133,13 +134,13 @@ export function MissionMonitorTable({ rows }: MissionMonitorTableProps) {
                               className="rounded-lg border border-slate-200 bg-white p-3"
                             >
                               <p className="text-sm font-semibold text-slate-900">
-                                Item {item.mission_order}: {formatLabel(item.mission_type)}
+                                Aksi {item.mission_order}: {formatLabel(item.mission_type)}
                               </p>
                               <p className="mt-1 text-sm text-slate-600">
                                 {item.target_description}
                               </p>
                               <p className="mt-2 text-xs text-slate-500">
-                                Status: {formatLabel(item.status)}
+                                Status: {getMissionItemStatusLabel(item.status)}
                               </p>
                             </div>
                           ))}

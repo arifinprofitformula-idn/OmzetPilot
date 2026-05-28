@@ -14,9 +14,9 @@ export function SendEveningReportButton() {
   return (
     <div className="space-y-2">
       <AdminActionButton
-        label="Send Evening Report to Eligible Users"
-        loadingLabel="Sending Evening Reports..."
-        successLabel="Evening report action completed."
+        label="Kirim Pengingat Laporan ke Tester"
+        loadingLabel="Mengirim Pengingat..."
+        successLabel="Pengingat laporan selesai dijalankan."
         endpoint="/api/admin/actions/send-evening-report"
         payload={{ send: true }}
         variant="secondary"
@@ -37,8 +37,8 @@ export function SendEveningReportButton() {
 
       {summary ? (
         <p className="text-xs leading-5 text-slate-600">
-          Eligible: {summary.totalEligible} • Sent: {summary.sentCount} • Failed:{" "}
-          {summary.failedCount}
+          Siap dikirim: {summary.totalEligible} • Berhasil: {summary.sentCount} •
+          Kendala: {summary.failedCount}
         </p>
       ) : null}
     </div>

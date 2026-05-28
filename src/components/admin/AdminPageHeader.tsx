@@ -6,7 +6,7 @@ type AdminPageHeaderProps = {
 };
 
 export function AdminPageHeader({
-  eyebrow = "OmzetPilot Admin",
+  eyebrow = "Ruang Kendali OmzetPilot",
   title,
   subtitle,
   actions,

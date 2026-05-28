@@ -77,15 +77,15 @@ export function DogfoodingUserRow({ tester }: DogfoodingUserRowProps) {
       <td className="px-4 py-4">
         <div className="flex min-w-44 flex-col gap-2">
           <DogfoodingStageBadge
-            label={tester.hasBusinessProfile ? "Profil Bisnis Ready" : "Profil Bisnis Missing"}
+            label={tester.hasBusinessProfile ? "Profil Bisnis Siap" : "Profil Bisnis Belum"}
             tone={readinessTone(tester.hasBusinessProfile)}
           />
           <DogfoodingStageBadge
-            label={tester.hasProductFocus ? "Produk Fokus Ready" : "Produk Fokus Missing"}
+            label={tester.hasProductFocus ? "Produk Fokus Siap" : "Produk Fokus Belum"}
             tone={readinessTone(tester.hasProductFocus)}
           />
           <DogfoodingStageBadge
-            label={tester.consentGiven ? "Consent Yes" : "Consent No"}
+            label={tester.consentGiven ? "Consent Ya" : "Consent Belum"}
             tone={readinessTone(tester.consentGiven)}
           />
         </div>
@@ -147,7 +147,7 @@ export function DogfoodingUserRow({ tester }: DogfoodingUserRowProps) {
             href={`/admin/users/${tester.userId}`}
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
           >
-            View Detail
+            Lihat Detail
           </Link>
           <GenerateMagicLinkButton userId={tester.userId} />
           <SendMissionButton userId={tester.userId} />
