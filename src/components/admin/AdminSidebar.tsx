@@ -11,6 +11,7 @@ const adminNavItems = [
   { href: "/admin/ai-logs", label: "AI Logs" },
   { href: "/admin/payment", label: "Payment" },
   { href: "/admin/settings", label: "Settings" },
+  { href: "/admin/qa", label: "QA" },
 ];
 
 function isActivePath(pathname: string, href: string) {
