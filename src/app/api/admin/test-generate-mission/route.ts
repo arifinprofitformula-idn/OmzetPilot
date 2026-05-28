@@ -1,7 +1,12 @@
 import { generateMissionForUser } from "@/src/lib/mission";
+import { verifyAdminSecret } from "@/src/lib/security";
 
 // Local/internal testing only. Remove or protect this route before wider deployment.
 export async function GET(req: Request) {
+  if (!verifyAdminSecret(req)) {
+    return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   const url = new URL(req.url);
   const userId = url.searchParams.get("user_id");
 

@@ -1,4 +1,10 @@
+import { verifyAdminSecret } from "@/src/lib/security";
+
 export async function GET(request: Request) {
+  if (!verifyAdminSecret(request)) {
+    return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const shouldSend = searchParams.get("send") === "true";
 

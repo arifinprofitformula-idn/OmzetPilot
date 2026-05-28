@@ -1,7 +1,12 @@
 import { supabaseAdmin } from "@/src/lib/supabaseAdmin";
+import { verifyAdminSecret } from "@/src/lib/security";
 
 // Internal diagnostic route only. Remove or protect before public beta.
-export async function GET() {
+export async function GET(req: Request) {
+  if (!verifyAdminSecret(req)) {
+    return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { data, error } = await supabaseAdmin
       .from("users")

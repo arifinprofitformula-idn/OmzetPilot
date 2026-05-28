@@ -5,8 +5,10 @@ import { connection } from "next/server";
 import { AdminPageHeader } from "@/src/components/admin/AdminPageHeader";
 import { ActivityLogList } from "@/src/components/admin/ActivityLogList";
 import { DetailSection } from "@/src/components/admin/DetailSection";
+import { GenerateMagicLinkButton } from "@/src/components/admin/GenerateMagicLinkButton";
 import { InfoRow } from "@/src/components/admin/InfoRow";
 import { MissionItemCard } from "@/src/components/admin/MissionItemCard";
+import { SendMissionButton } from "@/src/components/admin/SendMissionButton";
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
 import { getAdminUserDetailData } from "@/src/lib/adminUserDetail";
 import type { Json } from "@/src/types/database.types";
@@ -167,32 +169,29 @@ export default async function AdminUserDetailPage(
 
   if (!detail) {
     return (
-      <main className="min-h-screen bg-slate-50">
-        <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-10 lg:px-8">
-          <AdminPageHeader
-            currentPath="/admin/users"
-            title="User Not Found"
-            description="The requested admin user record could not be found."
-          />
+      <>
+        <AdminPageHeader
+          title="User Not Found"
+          subtitle="The requested admin user record could not be found."
+        />
 
-          <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-8 py-16 text-center shadow-sm">
-            <div className="mx-auto max-w-xl space-y-4">
-              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-                We could not find that user
-              </h2>
-              <p className="text-sm leading-6 text-slate-600">
-                The record may have been removed or the URL may be incorrect.
-              </p>
-              <Link
-                href="/admin/users"
-                className="inline-flex rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-              >
-                Back to Users
-              </Link>
-            </div>
-          </section>
-        </div>
-      </main>
+        <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-8 py-16 text-center shadow-sm">
+          <div className="mx-auto max-w-xl space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+              We could not find that user
+            </h2>
+            <p className="text-sm leading-6 text-slate-600">
+              The record may have been removed or the URL may be incorrect.
+            </p>
+            <Link
+              href="/admin/users"
+              className="inline-flex rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+            >
+              Back to Users
+            </Link>
+          </div>
+        </section>
+      </>
     );
   }
 
@@ -208,35 +207,33 @@ export default async function AdminUserDetailPage(
   const telegramStatus = user.telegram_chat_id ? "connected" : "not_connected";
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 lg:px-8">
-        <AdminPageHeader
-          currentPath="/admin/users"
-          title={user.full_name}
-          description="Inspect profile, mission history, reporting behavior, and operational activity for this alpha tester."
-          aside={
-            <div className="flex flex-wrap gap-2">
+    <>
+      <AdminPageHeader
+        title={user.full_name}
+        subtitle="Inspect profile, mission history, reporting behavior, and operational activity for this alpha tester."
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <StatusBadge
+              label={formatLabel(user.status)}
+              tone={getStatusTone(user.status)}
+            />
+            <StatusBadge
+              label={telegramStatus === "connected" ? "Connected" : "Not Connected"}
+              tone={getStatusTone(telegramStatus)}
+            />
+            {user.fit_score ? (
               <StatusBadge
-                label={formatLabel(user.status)}
-                tone={getStatusTone(user.status)}
+                label={formatLabel(user.fit_score)}
+                tone={getFitScoreTone(user.fit_score)}
               />
-              <StatusBadge
-                label={telegramStatus === "connected" ? "Connected" : "Not Connected"}
-                tone={getStatusTone(telegramStatus)}
-              />
-              {user.fit_score ? (
-                <StatusBadge
-                  label={formatLabel(user.fit_score)}
-                  tone={getFitScoreTone(user.fit_score)}
-                />
-              ) : (
-                <StatusBadge label="No Fit Score" tone="muted" />
-              )}
-            </div>
-          }
-        />
+            ) : (
+              <StatusBadge label="No Fit Score" tone="muted" />
+            )}
+          </div>
+        }
+      />
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">
@@ -269,29 +266,15 @@ export default async function AdminUserDetailPage(
               Back to Users
             </Link>
           </div>
-        </section>
+      </section>
 
-        <DetailSection
-          title="Quick Actions"
-          description="MVP founder tools for Telegram onboarding and mission delivery."
-        >
+      <DetailSection
+        title="Quick Actions"
+        description="MVP founder tools for Telegram onboarding and mission delivery."
+      >
           <div className="grid gap-4 md:grid-cols-3">
-            <Link
-              href={`/api/telegram/link?user_id=${user.id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 px-4 py-4 text-sm font-medium text-sky-700 transition-colors hover:bg-sky-100"
-            >
-              Generate Magic Link
-            </Link>
-            <Link
-              href={`/api/admin/test-send-mission?user_id=${user.id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
-            >
-              Send Today&apos;s Mission
-            </Link>
+            <GenerateMagicLinkButton userId={user.id} />
+            <SendMissionButton userId={user.id} />
             <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Telegram Status
@@ -301,9 +284,9 @@ export default async function AdminUserDetailPage(
               </p>
             </div>
           </div>
-        </DetailSection>
+      </DetailSection>
 
-        <DetailSection title="User Profile">
+      <DetailSection title="User Profile">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <InfoRow label="Full Name" value={user.full_name || "-"} />
             <InfoRow label="WhatsApp Number" value={user.whatsapp_number || "-"} />
@@ -317,9 +300,9 @@ export default async function AdminUserDetailPage(
             <InfoRow label="Consent Given" value={formatBoolean(user.consent_given)} />
             <InfoRow label="Created At" value={formatDateTime(user.created_at)} />
           </div>
-        </DetailSection>
+      </DetailSection>
 
-        <DetailSection title="Business Profile">
+      <DetailSection title="Business Profile">
           {businessProfile ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <InfoRow label="Business Name" value={businessProfile.business_name} />
@@ -364,9 +347,9 @@ export default async function AdminUserDetailPage(
               No business profile found for this user yet.
             </div>
           )}
-        </DetailSection>
+      </DetailSection>
 
-        <DetailSection title="Product Focus">
+      <DetailSection title="Product Focus">
           {productFocus ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <InfoRow label="Product Name" value={productFocus.product_name} />
@@ -390,9 +373,9 @@ export default async function AdminUserDetailPage(
               No product focus found for this user yet.
             </div>
           )}
-        </DetailSection>
+      </DetailSection>
 
-        <DetailSection title="Performance Summary">
+      <DetailSection title="Performance Summary">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <InfoRow
               label="Total Mission Days"
@@ -416,12 +399,12 @@ export default async function AdminUserDetailPage(
               value={formatCurrency(performanceSummary?.total_revenue ?? 0)}
             />
           </div>
-        </DetailSection>
+      </DetailSection>
 
-        <DetailSection
-          title="Latest Missions"
-          description="Most recent seven mission days, including item completion and report outcomes."
-        >
+      <DetailSection
+        title="Latest Missions"
+        description="Most recent seven mission days, including item completion and report outcomes."
+      >
           {latestMissions.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-sm text-slate-600">
               No missions available for this user yet.
@@ -559,17 +542,17 @@ export default async function AdminUserDetailPage(
               ))}
             </div>
           )}
-        </DetailSection>
+      </DetailSection>
 
-        <DetailSection title="Recent Activity Logs">
-          <ActivityLogList
-            logs={recentActivityLogs}
-            formatDateTime={formatDateTime}
-            summarizeMetadata={summarizeMetadata}
-          />
-        </DetailSection>
+      <DetailSection title="Recent Activity Logs">
+        <ActivityLogList
+          logs={recentActivityLogs}
+          formatDateTime={formatDateTime}
+          summarizeMetadata={summarizeMetadata}
+        />
+      </DetailSection>
 
-        <DetailSection title="Payment Validation">
+      <DetailSection title="Payment Validation">
           {paymentValidations.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-sm text-slate-600">
               No payment validation records available.
@@ -616,8 +599,7 @@ export default async function AdminUserDetailPage(
               ))}
             </div>
           )}
-        </DetailSection>
-      </div>
-    </main>
+      </DetailSection>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import { sendMissionToUser } from "@/src/lib/missionDelivery";
+import { verifyAdminSecret } from "@/src/lib/security";
 
 function buildErrorResponse(req: Request, userId: string, error: unknown) {
   const message =
@@ -16,7 +17,9 @@ function buildErrorResponse(req: Request, userId: string, error: unknown) {
 
   if (message === "User does not have telegram_chat_id") {
     const url = new URL(req.url);
-    const telegramLinkUrl = `${url.origin}/api/telegram/link?user_id=${encodeURIComponent(userId)}`;
+    const telegramLinkUrl = `${url.origin}/api/telegram/link?user_id=${encodeURIComponent(
+      userId
+    )}&admin_secret=YOUR_ADMIN_SECRET`;
 
     return Response.json(
       {
@@ -40,6 +43,10 @@ function buildErrorResponse(req: Request, userId: string, error: unknown) {
 
 // Internal testing route only. TODO: protect this route before wider deployment.
 export async function GET(req: Request) {
+  if (!verifyAdminSecret(req)) {
+    return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   const url = new URL(req.url);
   const userId = url.searchParams.get("user_id");
 

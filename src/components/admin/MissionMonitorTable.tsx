@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { SendMissionButton } from "@/src/components/admin/SendMissionButton";
 import { MissionStatusBadge } from "@/src/components/admin/MissionStatusBadge";
 import { ReportCodeBadge } from "@/src/components/admin/ReportCodeBadge";
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
@@ -119,22 +120,7 @@ export function MissionMonitorTable({ rows }: MissionMonitorTableProps) {
                     >
                       View User Detail
                     </Link>
-                    <Link
-                      href={`/api/admin/test-send-mission?user_id=${row.mission.user_id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-lg border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-50"
-                    >
-                      Send Mission
-                    </Link>
-                    <Link
-                      href="/api/admin/test-evening-report?send=true"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-lg border border-amber-200 px-3 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
-                    >
-                      Send Evening Report (MVP Test)
-                    </Link>
+                    <SendMissionButton userId={row.mission.user_id} />
                     {row.missionItems.length > 0 ? (
                       <details className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                         <summary className="cursor-pointer text-sm font-medium text-slate-700">

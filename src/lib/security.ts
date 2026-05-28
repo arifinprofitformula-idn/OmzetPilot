@@ -161,3 +161,15 @@ export function verifyCronSecret(req: Request): boolean {
     secretFromHeader === expectedSecret || secretFromQuery === expectedSecret
   );
 }
+
+export function verifyAdminSecret(req: Request): boolean {
+  const expectedSecret = getRequiredEnv("ADMIN_SECRET");
+
+  const url = new URL(req.url);
+  const secretFromHeader = req.headers.get("x-admin-secret");
+  const secretFromQuery = url.searchParams.get("admin_secret");
+
+  return (
+    secretFromHeader === expectedSecret || secretFromQuery === expectedSecret
+  );
+}

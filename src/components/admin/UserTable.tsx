@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { GenerateMagicLinkButton } from "@/src/components/admin/GenerateMagicLinkButton";
+import { SendMissionButton } from "@/src/components/admin/SendMissionButton";
 import type { AdminUserRecord } from "@/src/lib/adminUsers";
 import { StatusBadge } from "@/src/components/admin/StatusBadge";
 
@@ -127,22 +129,8 @@ export function UserTable({ users }: UserTableProps) {
                     >
                       View Detail
                     </Link>
-                    <Link
-                      href={`/api/telegram/link?user_id=${user.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-lg border border-sky-200 px-3 py-2 text-sm font-medium text-sky-700 transition-colors hover:bg-sky-50"
-                    >
-                      Generate Magic Link
-                    </Link>
-                    <Link
-                      href={`/api/admin/test-send-mission?user_id=${user.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-lg border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-50"
-                    >
-                      Send Mission
-                    </Link>
+                    <GenerateMagicLinkButton userId={user.id} />
+                    <SendMissionButton userId={user.id} />
                   </div>
                 </td>
               </tr>

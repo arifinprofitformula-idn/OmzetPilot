@@ -80,21 +80,19 @@ export default async function AdminReportsPage({
 
   // TODO: Protect admin routes with authentication and authorization before public beta.
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 lg:px-8">
-        <AdminPageHeader
-          currentPath="/admin/reports"
-          title="Reports & RGA"
-          description="Track daily report outcomes, revenue-generating actions, and closing signals."
-          aside={
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-              <p className="font-medium text-slate-900">Selected Date</p>
-              <p>{data.filters.date}</p>
-            </div>
-          }
-        />
+    <>
+      <AdminPageHeader
+        title="Reports & RGA"
+        subtitle="Track daily report outcomes, revenue-generating actions, and closing signals."
+        actions={
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <p className="font-medium text-slate-900">Selected Date</p>
+            <p>{data.filters.date}</p>
+          </div>
+        }
+      />
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
           <form className="grid gap-4 md:grid-cols-4 md:items-end" method="get">
             <label className="space-y-2">
               <span className="text-sm font-medium text-slate-700">Date</span>
@@ -141,9 +139,9 @@ export default async function AdminReportsPage({
               Apply
             </button>
           </form>
-        </section>
+      </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
           <StatCard
             label="Total Reports"
             value={data.summary.totalReports}
@@ -198,9 +196,9 @@ export default async function AdminReportsPage({
             description="Mission not executed."
             tone="danger"
           />
-        </section>
+      </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
           <div className="space-y-4">
             <div className="space-y-2">
               <h2 className="text-xl font-semibold tracking-tight text-slate-950">
@@ -222,23 +220,22 @@ export default async function AdminReportsPage({
               ))}
             </div>
           </div>
-        </section>
+      </section>
 
-        {data.rows.length === 0 ? (
-          <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-8 py-16 text-center shadow-sm">
-            <div className="mx-auto max-w-xl space-y-3">
-              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-                No reports found for the selected filter.
-              </h2>
-              <p className="text-sm leading-6 text-slate-600">
-                Try another date, closing filter, or report code selection.
-              </p>
-            </div>
-          </section>
-        ) : (
-          <ReportsTable rows={data.rows} />
-        )}
-      </div>
-    </main>
+      {data.rows.length === 0 ? (
+        <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-8 py-16 text-center shadow-sm">
+          <div className="mx-auto max-w-xl space-y-3">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+              No reports found for the selected filter.
+            </h2>
+            <p className="text-sm leading-6 text-slate-600">
+              Try another date, closing filter, or report code selection.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <ReportsTable rows={data.rows} />
+      )}
+    </>
   );
 }

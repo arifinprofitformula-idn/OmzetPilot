@@ -1,6 +1,10 @@
-import { signActivationToken } from "@/src/lib/security";
+import { signActivationToken, verifyAdminSecret } from "@/src/lib/security";
 
 export async function GET(req: Request) {
+  if (!verifyAdminSecret(req)) {
+    return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   const url = new URL(req.url);
   const userId = url.searchParams.get("user_id");
   const botUsername = process.env.TELEGRAM_BOT_USERNAME;

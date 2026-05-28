@@ -1,7 +1,12 @@
 import { submitMissionReport } from "@/src/lib/report";
+import { verifyAdminSecret } from "@/src/lib/security";
 
 // Internal testing route only. Remove or protect before public beta.
 export async function GET(req: Request) {
+  if (!verifyAdminSecret(req)) {
+    return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   const url = new URL(req.url);
   const missionId = url.searchParams.get("mission_id");
   const telegramChatId = url.searchParams.get("telegram_chat_id");
