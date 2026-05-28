@@ -13,6 +13,7 @@ const adminNavItems = [
   { href: "/admin/users", label: "Users" },
   { href: "/admin/missions", label: "Missions" },
   { href: "/admin/reports", label: "Reports" },
+  { href: "/admin/ai-logs", label: "AI Logs" },
 ];
 
 export function AdminPageHeader({

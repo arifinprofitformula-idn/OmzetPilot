@@ -66,7 +66,7 @@ const REPORT_FILTERS = new Set<MissionReportFilter>([
   "not_reported",
 ]);
 
-function isValidDateString(value: string | undefined) {
+function isValidDateString(value: string | undefined): value is string {
   if (!value) {
     return false;
   }
@@ -80,7 +80,12 @@ function normalizeFilters(input: {
   report?: string;
 }): MissionMonitorFilters {
   const today = getTodayInJakarta();
-  const date: string = isValidDateString(input.date) ? input.date : today;
+  let date = today;
+
+  if (isValidDateString(input.date)) {
+    date = input.date;
+  }
+
   const status: MissionStatusFilter = MISSION_STATUS_FILTERS.has(
     input.status as MissionStatusFilter
   )
