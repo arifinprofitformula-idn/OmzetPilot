@@ -3,37 +3,45 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 type ActivationTokenPayload = {
-  sub: string;
-  type: "telegram_link";
+  purpose: "telegram_link";
   user_id: string;
 };
 
+const ACTIVATION_TOKEN_PURPOSE = "telegram_link";
 const ACTIVATION_TOKEN_VERSION = 1;
-const ACTIVATION_TOKEN_TTL_SECONDS = 15 * 60;
-const UUID_BYTE_LENGTH = 16;
+const ACTIVATION_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60;
+const USER_ID_BYTE_LENGTH = 16;
 const EXPIRY_BYTE_LENGTH = 4;
 const SIGNATURE_BYTE_LENGTH = 12;
 const TOKEN_BODY_LENGTH =
-  1 + UUID_BYTE_LENGTH + EXPIRY_BYTE_LENGTH + SIGNATURE_BYTE_LENGTH;
+  1 + USER_ID_BYTE_LENGTH + EXPIRY_BYTE_LENGTH + SIGNATURE_BYTE_LENGTH;
+const USER_ID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function getActivationSecret() {
-  const secret = process.env.JWT_ACTIVATION_SECRET;
+function getRequiredEnv(name: string): string {
+  const value = process.env[name];
 
-  if (!secret) {
-    throw new Error("Missing JWT_ACTIVATION_SECRET environment variable");
+  if (!value) {
+    throw new Error(`Missing ${name} environment variable`);
   }
 
-  return new TextEncoder().encode(secret);
+  return value;
 }
 
-function uuidToBytes(uuid: string): Buffer {
-  const normalizedUuid = uuid.replace(/-/g, "");
+function getActivationSecret(): Buffer {
+  return Buffer.from(getRequiredEnv("JWT_ACTIVATION_SECRET"), "utf8");
+}
 
-  if (!/^[0-9a-fA-F]{32}$/.test(normalizedUuid)) {
-    throw new Error("Invalid user id for activation token");
+function assertValidUserId(userId: string): void {
+  if (!USER_ID_PATTERN.test(userId)) {
+    throw new Error("Invalid activation token user_id");
   }
+}
 
-  return Buffer.from(normalizedUuid, "hex");
+function uuidToBytes(userId: string): Buffer {
+  assertValidUserId(userId);
+
+  return Buffer.from(userId.replace(/-/g, ""), "hex");
 }
 
 function bytesToUuid(bytes: Uint8Array): string {
@@ -48,18 +56,15 @@ function bytesToUuid(bytes: Uint8Array): string {
   ].join("-");
 }
 
-function getActivationSignature(
-  version: number,
-  userIdBytes: Buffer,
-  expiresAtSeconds: number
-): Buffer {
-  const expiresAtBuffer = Buffer.alloc(EXPIRY_BYTE_LENGTH);
-  expiresAtBuffer.writeUInt32BE(expiresAtSeconds, 0);
+function signTokenBytes(userIdBytes: Buffer, expiresAtSeconds: number): Buffer {
+  const expiryBytes = Buffer.alloc(EXPIRY_BYTE_LENGTH);
+  expiryBytes.writeUInt32BE(expiresAtSeconds, 0);
 
-  return createHmac("sha256", Buffer.from(getActivationSecret()))
-    .update(Buffer.from([version]))
+  return createHmac("sha256", getActivationSecret())
+    .update(Buffer.from([ACTIVATION_TOKEN_VERSION]))
     .update(userIdBytes)
-    .update(expiresAtBuffer)
+    .update(expiryBytes)
+    .update(ACTIVATION_TOKEN_PURPOSE)
     .digest()
     .subarray(0, SIGNATURE_BYTE_LENGTH);
 }
@@ -68,73 +73,77 @@ export async function signActivationToken(userId: string): Promise<string> {
   const userIdBytes = uuidToBytes(userId);
   const expiresAtSeconds =
     Math.floor(Date.now() / 1000) + ACTIVATION_TOKEN_TTL_SECONDS;
-  const tokenBuffer = Buffer.alloc(TOKEN_BODY_LENGTH);
+  const tokenBytes = Buffer.alloc(TOKEN_BODY_LENGTH);
 
-  tokenBuffer.writeUInt8(ACTIVATION_TOKEN_VERSION, 0);
-  userIdBytes.copy(tokenBuffer, 1);
-  tokenBuffer.writeUInt32BE(expiresAtSeconds, 1 + UUID_BYTE_LENGTH);
+  tokenBytes.writeUInt8(ACTIVATION_TOKEN_VERSION, 0);
+  userIdBytes.copy(tokenBytes, 1);
+  tokenBytes.writeUInt32BE(expiresAtSeconds, 1 + USER_ID_BYTE_LENGTH);
+  signTokenBytes(userIdBytes, expiresAtSeconds).copy(
+    tokenBytes,
+    1 + USER_ID_BYTE_LENGTH + EXPIRY_BYTE_LENGTH
+  );
 
-  getActivationSignature(
-    ACTIVATION_TOKEN_VERSION,
-    userIdBytes,
-    expiresAtSeconds
-  ).copy(tokenBuffer, 1 + UUID_BYTE_LENGTH + EXPIRY_BYTE_LENGTH);
-
-  return tokenBuffer.toString("base64url");
+  return tokenBytes.toString("base64url");
 }
 
 export async function verifyActivationToken(
   token: string
 ): Promise<ActivationTokenPayload> {
-  const tokenBuffer = Buffer.from(token, "base64url");
+  try {
+    const tokenBytes = Buffer.from(token, "base64url");
 
-  if (tokenBuffer.length !== TOKEN_BODY_LENGTH) {
+    if (tokenBytes.length !== TOKEN_BODY_LENGTH) {
+      throw new Error("Invalid activation token");
+    }
+
+    const version = tokenBytes.readUInt8(0);
+
+    if (version !== ACTIVATION_TOKEN_VERSION) {
+      throw new Error("Invalid activation token purpose");
+    }
+
+    const userIdBytes = tokenBytes.subarray(1, 1 + USER_ID_BYTE_LENGTH);
+    const expiresAtSeconds = tokenBytes.readUInt32BE(1 + USER_ID_BYTE_LENGTH);
+    const signature = tokenBytes.subarray(
+      1 + USER_ID_BYTE_LENGTH + EXPIRY_BYTE_LENGTH
+    );
+    const expectedSignature = signTokenBytes(userIdBytes, expiresAtSeconds);
+
+    if (
+      signature.length !== expectedSignature.length ||
+      !timingSafeEqual(signature, expectedSignature)
+    ) {
+      throw new Error("Invalid activation token");
+    }
+
+    if (expiresAtSeconds < Math.floor(Date.now() / 1000)) {
+      throw new Error("Activation token expired");
+    }
+
+    const userId = bytesToUuid(userIdBytes);
+    assertValidUserId(userId);
+
+    return {
+      purpose: ACTIVATION_TOKEN_PURPOSE,
+      user_id: userId,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      if (
+        error.message === "Invalid activation token purpose" ||
+        error.message === "Invalid activation token user_id" ||
+        error.message === "Activation token expired"
+      ) {
+        throw error;
+      }
+    }
+
     throw new Error("Invalid activation token");
   }
-
-  const version = tokenBuffer.readUInt8(0);
-
-  if (version !== ACTIVATION_TOKEN_VERSION) {
-    throw new Error("Invalid activation token");
-  }
-
-  const userIdBytes = tokenBuffer.subarray(1, 1 + UUID_BYTE_LENGTH);
-  const expiresAtSeconds = tokenBuffer.readUInt32BE(1 + UUID_BYTE_LENGTH);
-  const signature = tokenBuffer.subarray(
-    1 + UUID_BYTE_LENGTH + EXPIRY_BYTE_LENGTH
-  );
-  const expectedSignature = getActivationSignature(
-    version,
-    userIdBytes,
-    expiresAtSeconds
-  );
-
-  if (
-    signature.length !== expectedSignature.length ||
-    !timingSafeEqual(signature, expectedSignature)
-  ) {
-    throw new Error("Invalid activation token");
-  }
-
-  if (expiresAtSeconds < Math.floor(Date.now() / 1000)) {
-    throw new Error("Activation token expired");
-  }
-
-  const userId = bytesToUuid(userIdBytes);
-
-  return {
-    sub: userId,
-    type: "telegram_link",
-    user_id: userId,
-  };
 }
 
 export function verifyTelegramSecret(req: Request): boolean {
-  const expectedSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
-
-  if (!expectedSecret) {
-    throw new Error("Missing TELEGRAM_WEBHOOK_SECRET environment variable");
-  }
+  const expectedSecret = getRequiredEnv("TELEGRAM_WEBHOOK_SECRET");
 
   const receivedSecret = req.headers.get("x-telegram-bot-api-secret-token");
 
@@ -142,11 +151,7 @@ export function verifyTelegramSecret(req: Request): boolean {
 }
 
 export function verifyCronSecret(req: Request): boolean {
-  const expectedSecret = process.env.CRON_SECRET;
-
-  if (!expectedSecret) {
-    throw new Error("Missing CRON_SECRET environment variable");
-  }
+  const expectedSecret = getRequiredEnv("CRON_SECRET");
 
   const url = new URL(req.url);
   const secretFromHeader = req.headers.get("x-cron-secret");

@@ -113,3 +113,33 @@ export function buildMissionDoneKeyboard(
     }),
   };
 }
+
+export function buildReportCodeKeyboard(
+  missionId: string
+): TelegramInlineKeyboardMarkup {
+  const reportCodes = [
+    { code: "1", text: "1 🔥" },
+    { code: "2", text: "2 ⏳" },
+    { code: "3", text: "3 💨" },
+    { code: "4", text: "4 🏃" },
+  ] as const;
+
+  return {
+    inline_keyboard: reportCodes.map((item) => {
+      const callbackData = `r:${missionId}:${item.code}`;
+
+      if (callbackData.length > 64) {
+        throw new Error(
+          `Report callback_data exceeds Telegram limit for mission ${missionId}`
+        );
+      }
+
+      return [
+        {
+          text: item.text,
+          callback_data: callbackData,
+        },
+      ];
+    }),
+  };
+}
